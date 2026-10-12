@@ -27,7 +27,7 @@ test('po pierwszym otwarciu gra działa offline, także karty i strona wydruku',
   await ustawGre(page, { tryb: 'starszak' });
   await skanuj(page, 1);
   await expect(page.getByText(gra.stacje[0].starszak.zagadka)).toBeVisible();
-  await rozwiazStarszaka(page, 'tygrys');
+  await rozwiazStarszaka(page, 'kot');
   await expect(page.locator('[data-szukana="2"]')).toBeVisible();
   await skanuj(page, 4);
   await expect(page.locator('[data-komunikat="za-wczesnie"]')).toBeVisible();

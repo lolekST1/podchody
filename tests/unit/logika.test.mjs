@@ -47,11 +47,13 @@ test('walidacja wyłapuje typowe błędy w pliku gry', () => {
   zla.stacje[2].maluch.poprawna = 5;
   zla.stacje[3].maluch.opcje = zla.stacje[3].maluch.opcje.slice(0, 2);
   delete zla.stacje[4].wskazowka.ogrod;
+  zla.stacje[5].starszak.odpowiedzi = ['Dżungla', 'las'];
   const bledy = sprawdzGre(zla).join('\n');
   assert.match(bledy, /stacja 2: token powtarza się/);
   assert.match(bledy, /stacja 3: "maluch.poprawna"/);
   assert.match(bledy, /stacja 4: maluch musi mieć 3–4 obrazki/);
   assert.match(bledy, /stacja 5: wskazowka.ogrod/);
+  assert.match(bledy, /stacja 6: starszak ma tę samą odpowiedź co maluch/, 'powtórka w trybie mieszanym');
 });
 
 test('poprawne odpowiedzi z pliku gry przechodzą przez sprawdzanie', () => {

@@ -96,6 +96,11 @@ export function sprawdzGre(gra) {
       `${gdzie}: "maluch.poprawna" musi wskazywać numer obrazka (od 0)`);
     wymagane(s.starszak?.zagadka, `${gdzie}: brak "starszak.zagadka"`);
     wymagane(Array.isArray(s.starszak?.odpowiedzi) && s.starszak.odpowiedzi.length > 0, `${gdzie}: brak "starszak.odpowiedzi"`);
+    // W trybie mieszanym obie zagadki są na jednym ekranie: gdy odpowiedź jest ta sama,
+    // starszak tylko przepisuje to, co maluch już wskazał obrazkiem.
+    const nazwaMalucha = opcje[s.maluch?.poprawna]?.nazwa;
+    wymagane(!(nazwaMalucha && Array.isArray(s.starszak?.odpowiedzi) && czyPoprawna(nazwaMalucha, s.starszak.odpowiedzi)),
+      `${gdzie}: starszak ma tę samą odpowiedź co maluch („${nazwaMalucha}”) — w trybie mieszanym to powtórka, wymyśl inną zagadkę`);
     for (const w of Object.keys(WARIANTY)) sprawdzWskazowke(s.wskazowka?.[w], `${gdzie}: wskazowka.${w}`, bledy);
   });
   return bledy;

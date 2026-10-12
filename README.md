@@ -58,7 +58,7 @@ Każda gra to jeden plik JSON w `app/gry/`. Najprościej poprosić Claude. Skopi
 > Liczba kart: **[np. 6]**. Kryjówki w domu: **[np. kanapa, łazienka, …]**. Kryjówki w ogrodzie:
 > **[…]**. Skarb: **[gdzie]**. Zagadki dla malucha: bardzo proste, 3–4 obrazki emoji, bez postaci
 > z bajek i znaków towarowych. Zagadki dla starszaka: dla podanego wieku, z kilkoma akceptowanymi
-> odpowiedziami. Nowe losowe tokeny. Dopisz grę do `app/gry/index.json`, uruchom `npm test`
+> odpowiedziami, i na każdej karcie z **inną odpowiedzią niż u malucha** (w trybie mieszanym obie są na jednym ekranie). Nowe losowe tokeny. Dopisz grę do `app/gry/index.json`, uruchom `npm test`
 > i wypchnij zmiany na `main`.
 
 Po wdrożeniu (około 3 minut) nowa gra pojawi się na ekranie „Przygotuj grę” i na stronie z kartami.

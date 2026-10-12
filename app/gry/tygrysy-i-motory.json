@@ -45,8 +45,8 @@
         "poprawna": 1
       },
       "starszak": {
-        "zagadka": "Jestem największym kotem na świecie. Mam pomarańczowe futro w czarne paski, a każdy z nas ma inny wzór pasków. Kim jestem?",
-        "odpowiedzi": ["tygrys", "tygrysem", "tygrysica"]
+        "zagadka": "Tygrys to największy kot na świecie. Jak nazywa się jego mały kuzyn, który mieszka z ludźmi w domu i mówi: miau?",
+        "odpowiedzi": ["kot", "kotek", "kocur", "kot domowy", "kotka"]
       },
       "wskazowka": {
         "dom": {
@@ -77,8 +77,8 @@
         "poprawna": 0
       },
       "starszak": {
-        "zagadka": "Mam dwa koła, kierownicę i silnik. Jeżdżę szybciej niż rower, a mój kierowca zawsze zakłada kask. Co to jest?",
-        "odpowiedzi": ["motor", "motocykl", "motorek", "skuter", "ścigacz"]
+        "zagadka": "Co musi założyć na głowę każdy motocyklista, zanim ruszy w drogę? Chroni głowę, gdy się przewróci.",
+        "odpowiedzi": ["kask", "kask motocyklowy", "kasku"]
       },
       "wskazowka": {
         "dom": {

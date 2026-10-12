@@ -5,7 +5,7 @@ import { gra, adres, nagrywajMowe, mowa, ustawGre, skanuj, rozwiazMalucha, rozwi
 test.beforeEach(async ({ page }) => { await nagrywajMowe(page); });
 
 // Odpowiedzi tak, jak wpisze je dziecko: wielkie litery, bez ogonków, z literówką, całym zdaniem.
-const ODPOWIEDZI_DZIECI = ['TYGRYS', 'motocyk', 'dziesiec', 'benzyne', 'na czerwonym', 'to jest Ulica'];
+const ODPOWIEDZI_DZIECI = ['KOT', 'kask', 'dziesiec', 'benzyne', 'na czerwonym', 'to jest Ulica'];
 
 test('starszak: cała gra od startu do skarbu, odpowiedzi z literówkami', async ({ page }) => {
   await ustawGre(page, { tryb: 'starszak' });
@@ -17,8 +17,8 @@ test('starszak: cała gra od startu do skarbu, odpowiedzi z literówkami', async
     await expect(page.locator('[data-czesc="maluch"]')).toHaveCount(0);
     if (s.nr === 1) {
       await zrzut(page, 'starszak-01-zagadka');
-      for (let i = 0; i < 3; i++) await rozwiazStarszaka(page, 'kot');
-      await expect(page.locator('.komunikat')).toContainText('zaczyna się na „T”');
+      for (let i = 0; i < 3; i++) await rozwiazStarszaka(page, 'lew');
+      await expect(page.locator('.komunikat')).toContainText('zaczyna się na „K”');
       await zrzut(page, 'starszak-02-podpowiedz-po-3-bledach');
     }
     await rozwiazStarszaka(page, ODPOWIEDZI_DZIECI[s.nr - 1]);
@@ -113,7 +113,7 @@ test('skanowanie poza kolejnością nie zdradza zagadki', async ({ page }) => {
 
   await skanuj(page, 1);
   await rozwiazMalucha(page, 1);
-  await rozwiazStarszaka(page, 'tygrys');
+  await rozwiazStarszaka(page, 'kot');
   await expect(page.locator('[data-szukana="2"]')).toBeVisible();
   await skanuj(page, 1);
   await expect(page.locator('[data-komunikat="juz-byla"]')).toContainText('karty nr 2');
@@ -122,7 +122,7 @@ test('skanowanie poza kolejnością nie zdradza zagadki', async ({ page }) => {
 test('postęp przeżywa przeładowanie i zamknięcie karty przeglądarki', async ({ page, context }) => {
   await ustawGre(page, { tryb: 'starszak' });
   await skanuj(page, 1);
-  await rozwiazStarszaka(page, 'tygrys');
+  await rozwiazStarszaka(page, 'kot');
   await expect(page.locator('[data-szukana="2"]')).toBeVisible();
   await skanuj(page, 2);
   await page.reload();
