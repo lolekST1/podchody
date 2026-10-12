@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#c2410c">
+  <title>Podchody</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="ikony/ikona.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="ikony/ikona-180.png">
+  <link rel="stylesheet" href="css/styl.css">
+</head>
+<body>
+  <main id="ekran" aria-live="polite"><p class="ladowanie">Ładuję grę…</p></main>
+  <footer class="stopka-gry"><button id="przycisk-rodzic" class="rodzic-wejscie" type="button" hidden>👤 Rodzic</button></footer>
+  <div id="skaner" class="skaner" hidden>
+    <video id="skaner-wideo" playsinline muted></video>
+    <div class="skaner-ramka"></div>
+    <p id="skaner-info" class="skaner-info">Wyceluj w kod na karcie</p>
+    <button id="skaner-zamknij" class="przycisk przycisk-jasny" type="button">✖ Zamknij</button>
+  </div>
+  <script src="vendor/jsQR.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

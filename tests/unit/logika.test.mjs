@@ -1,0 +1,121 @@
+// Testy logiki: tolerancja odpowiedzi (wymaganie 2), kolejność kart (wymaganie 3),
+// spójność pliku gry (wymaganie 1) i lista plików offline (wymaganie 4).
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import {
+  czyPoprawna, normalizuj, sprawdzGre, nowyStan, ocenSkan, zaliczCzesc,
+  pominStacje, cofnijStacje, biezacaWskazowka, adresKarty, czytajAdres,
+} from '../../app/js/logika.js';
+
+const gra = JSON.parse(readFileSync('app/gry/tygrysy-i-motory.json', 'utf8'));
+
+test('odpowiedź: wielkość liter i polskie znaki nie mają znaczenia', () => {
+  assert.ok(czyPoprawna('TYGRYS', ['tygrys']));
+  assert.ok(czyPoprawna('dziesiec', ['dziesięć']));
+  assert.ok(czyPoprawna('ŚCIGACZ', ['ścigacz']));
+  assert.ok(czyPoprawna('scigacz', ['ścigacz']));
+  assert.equal(normalizuj('Łódź!'), 'lodz');
+});
+
+test('odpowiedź: literówki tolerowane proporcjonalnie do długości', () => {
+  assert.ok(czyPoprawna('tygris', ['tygrys']), 'jedna zamieniona litera');
+  assert.ok(czyPoprawna('tgyrys', ['tygrys']), 'przestawione litery');
+  assert.ok(czyPoprawna('motocyk', ['motocykl']), 'brak litery');
+  assert.ok(czyPoprawna('benzyne', ['benzyna']));
+  assert.ok(!czyPoprawna('kot', ['tygrys']), 'inne słowo nie przechodzi');
+  assert.ok(!czyPoprawna('11', ['10']), 'liczby bez tolerancji');
+  assert.ok(!czyPoprawna('lew', ['lis']), 'krótkie słowa bez tolerancji');
+});
+
+test('odpowiedź: całe zdanie z poprawnym słowem przechodzi, pusta nie', () => {
+  assert.ok(czyPoprawna('to jest tygrys!', ['tygrys']));
+  assert.ok(czyPoprawna('chyba na czerwonym', ['na czerwonym']));
+  assert.ok(!czyPoprawna('   ', ['tygrys']));
+  assert.ok(!czyPoprawna('', ['tygrys']));
+});
+
+test('przykładowa gra przechodzi walidację i ma 6 stacji', () => {
+  assert.deepEqual(sprawdzGre(gra), []);
+  assert.equal(gra.stacje.length, 6);
+});
+
+test('walidacja wyłapuje typowe błędy w pliku gry', () => {
+  const zla = structuredClone(gra);
+  zla.stacje[1].token = zla.stacje[0].token;
+  zla.stacje[2].maluch.poprawna = 5;
+  zla.stacje[3].maluch.opcje = zla.stacje[3].maluch.opcje.slice(0, 2);
+  delete zla.stacje[4].wskazowka.ogrod;
+  const bledy = sprawdzGre(zla).join('\n');
+  assert.match(bledy, /stacja 2: token powtarza się/);
+  assert.match(bledy, /stacja 3: "maluch.poprawna"/);
+  assert.match(bledy, /stacja 4: maluch musi mieć 3–4 obrazki/);
+  assert.match(bledy, /stacja 5: wskazowka.ogrod/);
+});
+
+test('poprawne odpowiedzi z pliku gry przechodzą przez sprawdzanie', () => {
+  for (const s of gra.stacje) for (const o of s.starszak.odpowiedzi) assert.ok(czyPoprawna(o, s.starszak.odpowiedzi), o);
+});
+
+test('kolejność: tylko następna karta otwiera zagadkę', () => {
+  const stan = nowyStan({ tryb: 'starszak', wariant: 'dom', pin: '1234' });
+  const t = (nr) => gra.stacje[nr - 1].token;
+  assert.equal(ocenSkan(gra, stan, 1, t(1)).typ, 'stacja');
+  assert.equal(ocenSkan(gra, stan, 3, t(3)).typ, 'za-wczesnie');
+  assert.equal(ocenSkan(gra, stan, 1, 'zlytoken').typ, 'obca');
+  assert.equal(ocenSkan(gra, stan, 99, 'x').typ, 'obca');
+  assert.equal(ocenSkan(gra, null, 1, t(1)).typ, 'nie-rozpoczeta');
+  zaliczCzesc(stan, 1, 'starszak');
+  assert.equal(ocenSkan(gra, stan, 1, t(1)).typ, 'juz-byla');
+  assert.equal(ocenSkan(gra, stan, 2, t(2)).typ, 'stacja');
+});
+
+test('tryb mieszany wymaga obu części, zanim gra pójdzie dalej', () => {
+  const stan = nowyStan({ tryb: 'mieszany', wariant: 'ogrod', pin: '1234' });
+  assert.equal(zaliczCzesc(stan, 1, 'maluch'), false);
+  assert.equal(stan.aktualna, 0);
+  assert.equal(zaliczCzesc(stan, 1, 'starszak'), true);
+  assert.equal(stan.aktualna, 1);
+  assert.equal(zaliczCzesc(stan, 3, 'maluch'), false, 'nie można zaliczyć karty poza kolejnością');
+});
+
+test('panel rodzica: pominięcie i cofnięcie stacji', () => {
+  const stan = nowyStan({ tryb: 'maluch', wariant: 'dom', pin: '1234' });
+  pominStacje(stan, 6);
+  assert.equal(stan.aktualna, 1);
+  assert.deepEqual(stan.pominiete, [1]);
+  assert.equal(biezacaWskazowka(gra, stan), gra.stacje[0].wskazowka.dom);
+  cofnijStacje(stan);
+  assert.equal(stan.aktualna, 0);
+  assert.deepEqual(stan.pominiete, []);
+  assert.equal(biezacaWskazowka(gra, stan), gra.start.dom);
+  for (let i = 0; i < 6; i++) pominStacje(stan, 6);
+  assert.equal(stan.aktualna, 6);
+  assert.ok(stan.koniec);
+  assert.equal(pominStacje(stan, 6), false, 'po skarbie nie ma dokąd iść');
+});
+
+test('adres karty i jego odczyt to para odwrotna', () => {
+  const a = adresKarty('https://lolekst1.github.io/podchody', gra, gra.stacje[2]);
+  assert.equal(a, 'https://lolekst1.github.io/podchody/?g=tygrysy-i-motory&s=3&t=kl8w3d');
+  assert.deepEqual(czytajAdres(a), { g: 'tygrysy-i-motory', s: 3, t: 'kl8w3d' });
+  assert.equal(czytajAdres('https://example.com/'), null);
+  assert.equal(czytajAdres('nie adres'), null);
+});
+
+test('service worker zapisuje offline każdy plik aplikacji', () => {
+  const sw = readFileSync('app/sw.js', 'utf8');
+  const pliki = [];
+  const przejdz = (k) => readdirSync(k).forEach((p) => {
+    const s = join(k, p);
+    if (statSync(s).isDirectory()) przejdz(s); else pliki.push(relative('app', s));
+  });
+  przejdz('app');
+  const pomijane = (p) => p === 'sw.js' || p.startsWith('gry/') && p !== 'gry/index.json';
+  for (const p of pliki.filter((x) => !pomijane(x))) assert.ok(sw.includes(`'${p}'`), `brak w sw.js: ${p}`);
+  const lista = JSON.parse(readFileSync('app/gry/index.json', 'utf8')).gry;
+  for (const p of pliki.filter((x) => x.startsWith('gry/') && x !== 'gry/index.json')) {
+    assert.ok(lista.includes(p.slice(4, -5)), `gra ${p} nie jest w gry/index.json`);
+  }
+});

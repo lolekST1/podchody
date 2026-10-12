@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="tygrys">
+  <circle cx="22" cy="24" r="13" fill="#f08c00" stroke="#1f1f1f" stroke-width="3"/>
+  <circle cx="78" cy="24" r="13" fill="#f08c00" stroke="#1f1f1f" stroke-width="3"/>
+  <circle cx="22" cy="24" r="6" fill="#1f1f1f"/>
+  <circle cx="78" cy="24" r="6" fill="#1f1f1f"/>
+  <ellipse cx="50" cy="55" rx="38" ry="35" fill="#f08c00" stroke="#1f1f1f" stroke-width="3"/>
+  <path d="M50 21 v12 M40 23 l3 10 M60 23 l-3 10" stroke="#1f1f1f" stroke-width="4" stroke-linecap="round"/>
+  <path d="M13 50 h10 M14 60 h9 M87 50 h-10 M86 60 h-9" stroke="#1f1f1f" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="50" cy="71" rx="20" ry="15" fill="#fff"/>
+  <circle cx="37" cy="49" r="5" fill="#1f1f1f"/>
+  <circle cx="63" cy="49" r="5" fill="#1f1f1f"/>
+  <circle cx="38.5" cy="47.5" r="1.6" fill="#fff"/>
+  <circle cx="64.5" cy="47.5" r="1.6" fill="#fff"/>
+  <path d="M44 62 h12 l-6 7 z" fill="#d6336c" stroke="#1f1f1f" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M50 69 v5 M50 74 q-6 5 -10 1 M50 74 q6 5 10 1" stroke="#1f1f1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

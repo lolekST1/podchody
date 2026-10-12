@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Podchody — karty do druku</title>
+  <link rel="icon" href="ikony/ikona.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/druk.css">
+</head>
+<body>
+  <section class="ustawienia" aria-label="Ustawienia wydruku">
+    <h1>🖨️ Karty do druku</h1>
+    <label>Gra <select id="gra"></select></label>
+    <fieldset>
+      <legend>Gdzie schowasz karty?</legend>
+      <label><input type="radio" name="wariant" value="dom" checked> 🏠 W domu (zwykły papier)</label>
+      <label><input type="radio" name="wariant" value="ogrod"> 🌳 Na zewnątrz (większy, odporniejszy kod; włóż w koszulkę foliową)</label>
+    </fieldset>
+    <label><input type="checkbox" id="sciagawka" checked> Dołącz ściągawkę dla rodzica (gdzie schować karty + odpowiedzi)</label>
+    <details>
+      <summary>Adres gry w kodach QR</summary>
+      <p>Zostaw bez zmian, jeśli otwierasz tę stronę z adresu, pod którym gra jest opublikowana.</p>
+      <input id="baza" type="url" spellcheck="false">
+    </details>
+    <p id="ostrzezenie" class="ostrzezenie" hidden></p>
+    <button id="drukuj" type="button">🖨️ Drukuj albo zapisz jako PDF</button>
+    <p class="cichy">W oknie drukowania wybierz format A4, skala 100%, bez nagłówków i stopek. Kartka = jedna karta.</p>
+    <p><a href="./">⬅️ Wróć do gry</a></p>
+  </section>
+  <div id="karty"></div>
+  <script src="vendor/qrcode.js"></script>
+  <script type="module" src="js/druk.js"></script>
+</body>
+</html>
