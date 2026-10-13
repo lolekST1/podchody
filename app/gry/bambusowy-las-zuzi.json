@@ -256,10 +256,10 @@
           "starszak": "Pandy dużo śpią. Ostatnia karta jest w łóżku, pod kołdrą."
         },
         "ogrod": {
-          "schowek": "przy dużym kamieniu",
-          "obrazek": "🪨",
-          "maluch": "Jeszcze tylko jedna! Następna karta jest przy dużym kamieniu.",
-          "starszak": "Ostatnia karta jest przy dużym, szarym kamieniu."
+          "schowek": "pod folią (w tunelu foliowym lub szklarni)",
+          "obrazek": "🌱",
+          "maluch": "Jeszcze tylko jedna! Następna karta jest pod folią, tam gdzie rosną roślinki.",
+          "starszak": "Ostatnia karta jest pod folią, w tunelu, gdzie rosną roślinki."
         }
       }
     },
