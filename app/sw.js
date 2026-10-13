@@ -1,6 +1,6 @@
 // Service worker: po pierwszym otwarciu cała gra działa bez internetu.
 // Przy każdej zmianie plików aplikacji podbij WERSJA — stary cache zostanie usunięty.
-const WERSJA = 'podchody-v3';
+const WERSJA = 'podchody-v4';
 const PLIKI = [
   './',
   'index.html',

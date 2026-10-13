@@ -43,7 +43,7 @@ export function skrzyniaSVG() {
 }
 
 export function motorekSVG() {
-  return `<svg viewBox="0 0 120 80" aria-hidden="true">
+  return `<svg viewBox="0 -10 120 90" aria-hidden="true">
   <g class="mt-kolo"><circle cx="24" cy="58" r="16" fill="#fff" stroke="#212529" stroke-width="7"/><path d="M24 44 v28 M10 58 h28" stroke="#868e96" stroke-width="2.5"/></g>
   <g class="mt-kolo mt-kolo-p"><circle cx="96" cy="58" r="16" fill="#fff" stroke="#212529" stroke-width="7"/><path d="M96 44 v28 M82 58 h28" stroke="#868e96" stroke-width="2.5"/></g>
   <g class="mt-rama">
@@ -53,14 +53,28 @@ export function motorekSVG() {
     <path d="M78 20 L84 26 M74 16 H88" stroke="#212529" stroke-width="5" stroke-linecap="round"/>
     <circle cx="92" cy="32" r="5" fill="#ffd43b" stroke="#212529" stroke-width="2.5"/>
     <g class="mt-kierowca">
-      <circle cx="48" cy="12" r="12" fill="#f08c00" stroke="#212529" stroke-width="3"/>
-      <circle cx="39" cy="3" r="4.5" fill="#f08c00" stroke="#212529" stroke-width="2.5"/>
-      <circle cx="57" cy="3" r="4.5" fill="#f08c00" stroke="#212529" stroke-width="2.5"/>
-      <path d="M44 1 v5 M48 0 v6 M52 1 v5" stroke="#212529" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="44" cy="12" r="2" fill="#212529"/><circle cx="53" cy="12" r="2" fill="#212529"/>
-      <ellipse cx="48.5" cy="17" rx="5" ry="3.5" fill="#fff"/>
-      <path d="M50 24 Q62 26 76 22" stroke="#f08c00" stroke-width="7" stroke-linecap="round" fill="none"/>
-      <path d="M50 24 Q62 26 76 22" stroke="#212529" stroke-width="2" stroke-dasharray="3 5" fill="none"/>
+      <path d="M36 34 Q20 34 14 20" fill="none" stroke="#212529" stroke-width="7" stroke-linecap="round"/>
+      <path d="M36 34 Q20 34 14 20" fill="none" stroke="#f08c00" stroke-width="4" stroke-linecap="round"/>
+      <path d="M36 34 Q20 34 14 20" fill="none" stroke="#212529" stroke-width="4" stroke-dasharray="2 4"/>
+      <path d="M42 34 L56 38 L54 49" fill="none" stroke="#212529" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M42 34 L56 38 L54 49" fill="none" stroke="#f08c00" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="44" cy="22" rx="10" ry="14" transform="rotate(28 44 22)" fill="#f08c00" stroke="#212529" stroke-width="3"/>
+      <ellipse cx="47" cy="24" rx="5" ry="9" transform="rotate(28 47 24)" fill="#fff8f0"/>
+      <path d="M36 18 l5 2 M34 25 l5 2" stroke="#212529" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M50 14 Q62 18 75 15" fill="none" stroke="#212529" stroke-width="9" stroke-linecap="round"/>
+      <path d="M50 14 Q62 18 75 15" fill="none" stroke="#f08c00" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="76" cy="15" r="4.5" fill="#f08c00" stroke="#212529" stroke-width="2.5"/>
+      <g class="mt-glowa">
+        <circle cx="53" cy="-1" r="5" fill="#f08c00" stroke="#212529" stroke-width="2.5"/>
+        <circle cx="71" cy="-1" r="5" fill="#f08c00" stroke="#212529" stroke-width="2.5"/>
+        <circle cx="62" cy="7" r="12" fill="#f08c00" stroke="#212529" stroke-width="3"/>
+        <path d="M58 -3 v4 M62 -4 v5 M66 -3 v4" stroke="#212529" stroke-width="2" stroke-linecap="round"/>
+        <path d="M50 2 Q62 -4 74 2" fill="none" stroke="#212529" stroke-width="2.5"/>
+        <circle cx="58" cy="2" r="3.6" fill="#74c0fc" stroke="#212529" stroke-width="1.8"/>
+        <circle cx="66" cy="2" r="3.6" fill="#74c0fc" stroke="#212529" stroke-width="1.8"/>
+        <ellipse cx="63" cy="12" rx="6" ry="4.2" fill="#fff"/>
+        <circle cx="59" cy="8" r="1.6" fill="#212529"/><circle cx="67" cy="8" r="1.6" fill="#212529"/>
+        <path d="M61.5 10.5 h3 l-1.5 1.8 z" fill="#e64980"/>
     </g>
   </g>
 </svg>`;

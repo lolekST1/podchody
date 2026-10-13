@@ -69,6 +69,14 @@ export function maskotkaSVG({ etykieta = 'Tygrysek' } = {}) {
     </g>
     <path d="M70 126 l-24 -4 M70 132 l-22 4 M130 126 l24 -4 M130 132 l22 4" stroke="${KONTUR}" stroke-width="2" stroke-linecap="round" opacity=".55"/>
   </g>
+  <g class="mk-reka-gora">
+    <path d="M140 176 Q184 170 178 128" fill="none" stroke="${KONTUR}" stroke-width="28" stroke-linecap="round"/>
+    <path d="M140 176 Q184 170 178 128" fill="none" stroke="${RUDY}" stroke-width="20" stroke-linecap="round"/>
+    <path d="M150 168 q8 -2 12 -8 M166 150 q6 -3 8 -9" stroke="${KONTUR}" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <circle cx="178" cy="122" r="15" fill="${RUDY}" stroke="${KONTUR}" stroke-width="4"/>
+    <ellipse cx="178" cy="125" rx="7" ry="6" fill="#ffc9b9"/>
+    <circle cx="170" cy="115" r="3" fill="#ffc9b9"/><circle cx="178" cy="112" r="3" fill="#ffc9b9"/><circle cx="186" cy="115" r="3" fill="#ffc9b9"/>
+  </g>
 </svg>`;
 }
 
@@ -84,6 +92,9 @@ export function nastroj(nastroj, ms = 1600) {
 }
 
 // Pyszczek rusza się, gdy telefon czyta na głos.
-document.addEventListener('mowa', (e) => {
-  document.querySelectorAll('.maskotka').forEach((el) => el.classList.toggle('mowi', e.detail.trwa));
-});
+// Strażnik na document: moduł ładuje też Node (podgląd rysunków w scripts/).
+if (typeof document !== 'undefined') {
+  document.addEventListener('mowa', (e) => {
+    document.querySelectorAll('.maskotka').forEach((el) => el.classList.toggle('mowi', e.detail.trwa));
+  });
+}
