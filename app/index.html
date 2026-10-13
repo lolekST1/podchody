@@ -8,14 +8,16 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="ikony/ikona.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="ikony/ikona-180.png">
+  <link rel="preload" href="fonty/baloo-2-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/styl.css">
 </head>
 <body>
+  <div class="tlo" aria-hidden="true"><div class="slonce"></div><div class="liscie liscie-l"></div><div class="liscie liscie-p"></div></div>
   <main id="ekran" aria-live="polite"><p class="ladowanie">Ładuję grę…</p></main>
   <footer class="stopka-gry"><button id="przycisk-rodzic" class="rodzic-wejscie" type="button" hidden>👤 Rodzic</button></footer>
   <div id="skaner" class="skaner" hidden>
     <video id="skaner-wideo" playsinline muted></video>
-    <div class="skaner-ramka"></div>
+    <div class="skaner-ramka"><span class="rog r1"></span><span class="rog r2"></span><span class="rog r3"></span><span class="rog r4"></span><span class="laser"></span></div>
     <p id="skaner-info" class="skaner-info">Wyceluj w kod na karcie</p>
     <button id="skaner-zamknij" class="przycisk przycisk-jasny" type="button">✖ Zamknij</button>
   </div>

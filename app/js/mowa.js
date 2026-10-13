@@ -23,10 +23,16 @@ export function mow(tekst) {
     if (glos) w.voice = glos;
     w.rate = 0.9; // wolniej — trzylatek nie nadąża za domyślnym tempem
     w.pitch = 1.05;
+    // Zdarzenie dla maskotki — rusza pyszczkiem, dopóki trwa czytanie.
+    const sygnal = (trwa) => document.dispatchEvent(new CustomEvent('mowa', { detail: { trwa } }));
+    w.onstart = () => sygnal(true);
+    w.onend = () => sygnal(false);
+    w.onerror = () => sygnal(false);
     synteza.speak(w);
   } catch { /* przeglądarka bez mowy — tekst i tak jest na ekranie */ }
 }
 
 export function przerwijMowe() {
   try { synteza?.cancel(); } catch { /* nic */ }
+  document.dispatchEvent(new CustomEvent('mowa', { detail: { trwa: false } }));
 }

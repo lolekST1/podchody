@@ -5,12 +5,17 @@ import {
 } from './logika.js';
 import { mow, przerwijMowe, mowaDostepna } from './mowa.js';
 import { otworzSkaner } from './skaner.js';
+import { maskotkaSVG, nastroj } from './maskotka.js';
+import { skrzyniaSVG, motorekSVG } from './sceny.js';
+import { wybuch, deszcz, fontanna, spaliny, dzwiek, wibruj, czyCisza, przelaczCisze } from './efekty.js';
 
 const $ekran = document.getElementById('ekran');
 const $rodzic = document.getElementById('przycisk-rodzic');
 
 let gra = null;
 let stan = null;
+// Postęp pokazany na drodze przy poprzednim ekranie — motorek rusza z tego miejsca.
+let postepNaDrodze = null;
 
 // ---------- Zapis na urządzeniu ----------
 // localStorage może rzucić wyjątkiem (tryb prywatny, zablokowane dane) — gra ma wtedy
@@ -35,39 +40,87 @@ function h(html) {
   return t.content;
 }
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-function pokaz(html, { rodzic = true } = {}) {
+function pokaz(html, { rodzic = true, klasa = '' } = {}) {
   przerwijMowe();
+  $ekran.className = `ekran ${klasa}`;
   $ekran.replaceChildren(h(html));
   $rodzic.hidden = !(rodzic && stan);
   window.scrollTo(0, 0);
   const tytul = $ekran.querySelector('h1');
   if (tytul) tytul.setAttribute('tabindex', '-1');
+  podepnijNaglowek();
 }
 const na = (sel, fn, zdarzenie = 'click') => $ekran.querySelectorAll(sel).forEach((el) => el.addEventListener(zdarzenie, fn));
 const liczbaStacji = () => gra.stacje.length;
 const czytaTryb = (czesc) => stan && potrzebneCzesci(stan.tryb).includes(czesc);
 const adresBazowy = () => new URL('./', location.href).href;
+// Kolejne elementy ekranu wjeżdżają po sobie — --d to opóźnienie w krokach.
+const wej = (d) => `style="--d:${d}"`;
+const maskotka = (klasa = '', etykieta) => `<div class="maskotka ${klasa}" aria-hidden="${etykieta ? 'false' : 'true'}">${maskotkaSVG({ etykieta })}</div>`;
 
 function naglowek() {
-  const ikony = (gra.motyw.ikony ?? [gra.motyw.ikona]).join('');
-  const postep = stan ? `<span class="postep">${Math.min(stan.aktualna, liczbaStacji())} / ${liczbaStacji()} ✅</span>` : '';
-  return `<div class="naglowek"><span class="ikony" aria-hidden="true">${ikony}</span><span>${esc(gra.tytul)}</span>${postep}</div>`;
+  const n = liczbaStacji();
+  const zrobione = stan ? Math.min(stan.aktualna, n) : 0;
+  const pozycja = stan && stan.aktualna >= n ? n + 1 : zrobione; // po ostatniej karcie motorek staje na mecie
+  const droga = !stan ? '' : `
+    <div class="droga" style="--n:${n}" data-droga="${pozycja}">
+      <div class="droga-asfalt"><div class="droga-pasy"></div></div>
+      ${gra.stacje.map((s) => `<span class="flaga ${s.nr <= zrobione ? 'zdobyta' : ''} ${s.nr === zrobione + 1 ? 'nastepna' : ''}" style="--i:${s.nr}">${s.nr}</span>`).join('')}
+      <span class="meta" aria-hidden="true">🎁</span>
+      <div class="motorek" style="--p:${postepNaDrodze ?? pozycja}">${motorekSVG()}</div>
+    </div>`;
+  return `<header class="naglowek" ${wej(0)}>
+    <div class="naglowek-gora">
+      <span class="tytul-gry"><span class="ikony" aria-hidden="true">${(gra.motyw.ikony ?? [gra.motyw.ikona]).join('')}</span>${esc(gra.tytul)}</span>
+      ${stan ? `<span class="postep" aria-label="Zaliczone karty">${zrobione} / ${n} ✅</span>` : ''}
+      <button class="cisza" type="button" data-cisza aria-label="${czyCisza() ? 'Włącz dźwięki' : 'Wycisz dźwięki'}">${czyCisza() ? '🔇' : '🔊'}</button>
+    </div>
+    ${droga}
+  </header>`;
 }
+
+// Motorek jedzie od poprzedniej pozycji do bieżącej — z warkotem i spalinami.
+function podepnijNaglowek() {
+  na('[data-cisza]', (e) => {
+    const c = przelaczCisze();
+    e.currentTarget.textContent = c ? '🔇' : '🔊';
+    e.currentTarget.setAttribute('aria-label', c ? 'Włącz dźwięki' : 'Wycisz dźwięki');
+  });
+  const $droga = $ekran.querySelector('[data-droga]');
+  if (!$droga) { postepNaDrodze = null; return; }
+  const cel = Number($droga.dataset.droga);
+  const $motor = $droga.querySelector('.motorek');
+  if (postepNaDrodze !== null && postepNaDrodze !== cel) {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      $motor.classList.add('jedzie');
+      $motor.style.setProperty('--p', cel);
+      dzwiek('wrrum');
+      const kurz = setInterval(() => { const q = $motor.getBoundingClientRect(); spaliny(q.left + 4, q.bottom - 10); }, 160);
+      setTimeout(() => { clearInterval(kurz); $motor.classList.remove('jedzie'); }, 1500);
+    }));
+  }
+  postepNaDrodze = cel;
+}
+
 function przyciskMowy(tekst, etykieta = '🔊 Posłuchaj') {
   if (!mowaDostepna()) return '';
-  return `<button class="przycisk przycisk-jasny" type="button" data-mow="${esc(tekst)}">${etykieta}</button>`;
+  return `<button class="przycisk przycisk-jasny przycisk-mowy" type="button" data-mow="${esc(tekst)}">${etykieta}</button>`;
 }
 function podepnijMowe() {
   na('[data-mow]', (e) => mow(e.currentTarget.dataset.mow));
 }
-const przyciskSkanu = '<button class="przycisk" type="button" data-skanuj>📷 Skanuj kartę</button>';
+const przyciskSkanu = (d) => `<button class="przycisk przycisk-skanuj" type="button" data-skanuj ${wej(d)}><span class="ikona-aparatu" aria-hidden="true">📷</span> Skanuj kartę</button>`;
 function podepnijSkan() {
-  na('[data-skanuj]', () => otworzSkaner((adres) => {
-    const dane = czytajAdres(adres);
-    if (!dane) return false;
-    obsluzSkan(dane);
-    return true;
-  }));
+  na('[data-skanuj]', () => {
+    dzwiek('klik');
+    otworzSkaner((adres) => {
+      const dane = czytajAdres(adres);
+      if (!dane) return false;
+      wibruj(30);
+      obsluzSkan(dane);
+      return true;
+    });
+  });
 }
 
 // ---------- Start aplikacji ----------
@@ -108,7 +161,7 @@ async function ustawGre(id) {
   if (gra?.id !== id) gra = await wczytajGre(id);
   stan = czytaj(kluczStanu(gra.id));
   zapisz(KLUCZ_GRY, gra.id);
-  document.documentElement.style.setProperty('--motyw', gra.motyw.kolor ?? '#c2410c');
+  document.documentElement.style.setProperty('--motyw', gra.motyw.kolor ?? '#e8590c');
 }
 
 async function obsluzSkan(dane) {
@@ -141,39 +194,51 @@ async function ekranKonfiguracji() {
     try { tytuly[id] = id === gra.id ? gra : await wczytajGre(id); } catch { /* pomijamy uszkodzony plik */ }
   }
   const wybor = { gra: gra.id, tryb: null, wariant: null };
+  const kafel = (atr, wart, emo, tytul, opis) => `<button class="wybor" type="button" data-${atr}="${wart}" aria-pressed="false">
+      <span class="emo" aria-hidden="true">${emo}</span><span>${tytul}${opis ? `<small>${opis}</small>` : ''}</span><span class="ptaszek" aria-hidden="true">✓</span></button>`;
 
   pokaz(`
-    ${naglowek()}
-    <h1>Przygotuj grę</h1>
-    <p class="cichy">Ten ekran jest dla rodzica. Dzieci zobaczą grę po naciśnięciu „Zaczynamy!”.</p>
-    ${Object.keys(tytuly).length > 1 ? `<div class="panel"><h2>Gra</h2><div class="wybory">
+    <section class="powitanie-gry" ${wej(0)}>
+      ${maskotka('macha', 'Tygrysek macha na powitanie')}
+      <div>
+        <p class="nadtytul">Gra terenowa</p>
+        <p class="logo">Podchody</p>
+        <p class="cichy">${esc(gra.tytul)} · ${gra.stacje.length} kart</p>
+      </div>
+    </section>
+    <h1 ${wej(1)}>Przygotuj grę</h1>
+    <p class="cichy" ${wej(1)}>Ten ekran jest dla rodzica. Dzieci zobaczą grę po naciśnięciu „Zaczynamy!”.</p>
+    ${Object.keys(tytuly).length > 1 ? `<div class="panel" ${wej(2)}><h2>Gra</h2><div class="wybory">
       ${Object.values(tytuly).map((g) => `<button class="wybor" type="button" data-gra="${esc(g.id)}" aria-pressed="${g.id === gra.id}">
-        <span class="emo">${esc(g.motyw.ikona)}</span><span>${esc(g.tytul)}<small>${esc(g.opis ?? '')}</small></span></button>`).join('')}
+        <span class="emo">${esc(g.motyw.ikona)}</span><span>${esc(g.tytul)}<small>${esc(g.opis ?? '')}</small></span><span class="ptaszek" aria-hidden="true">✓</span></button>`).join('')}
     </div></div>` : ''}
-    <div class="panel"><h2>Kto gra?</h2><div class="wybory">
-      <button class="wybor" type="button" data-tryb="maluch" aria-pressed="false"><span class="emo">🧸</span><span>${TRYBY.maluch}<small>Zagadka czytana na głos, odpowiedź obrazkiem</small></span></button>
-      <button class="wybor" type="button" data-tryb="starszak" aria-pressed="false"><span class="emo">🧩</span><span>${TRYBY.starszak}<small>Zagadka do przeczytania, odpowiedź wpisywana</small></span></button>
-      <button class="wybor" type="button" data-tryb="mieszany" aria-pressed="false"><span class="emo">🤝</span><span>${TRYBY.mieszany}<small>Na każdej stacji obie zagadki — starsi pomagają młodszym</small></span></button>
+    <div class="panel" ${wej(2)}><h2>Kto gra?</h2><div class="wybory">
+      ${kafel('tryb', 'maluch', '🧸', TRYBY.maluch, 'Zagadka czytana na głos, odpowiedź obrazkiem')}
+      ${kafel('tryb', 'starszak', '🧩', TRYBY.starszak, 'Zagadka do przeczytania, odpowiedź wpisywana')}
+      ${kafel('tryb', 'mieszany', '🤝', TRYBY.mieszany, 'Na każdej karcie obie zagadki — starsi pomagają młodszym')}
     </div></div>
-    <div class="panel"><h2>Gdzie schowane są karty?</h2><div class="wybory">
-      <button class="wybor" type="button" data-wariant="dom" aria-pressed="false"><span class="emo">🏠</span><span>${WARIANTY.dom}</span></button>
-      <button class="wybor" type="button" data-wariant="ogrod" aria-pressed="false"><span class="emo">🌳</span><span>${WARIANTY.ogrod}</span></button>
+    <div class="panel" ${wej(3)}><h2>Gdzie schowane są karty?</h2><div class="wybory dwa">
+      ${kafel('wariant', 'dom', '🏠', WARIANTY.dom)}
+      ${kafel('wariant', 'ogrod', '🌳', WARIANTY.ogrod)}
     </div></div>
-    <div class="panel"><h2>PIN rodzica</h2>
+    <div class="panel" ${wej(4)}><h2>PIN rodzica</h2>
       <p class="cichy">4 cyfry. Otwiera panel rodzica: postęp, pominięcie zgubionej karty, reset.</p>
       <input id="pin" class="pole" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="np. 2580" aria-label="PIN rodzica">
     </div>
-    <button id="zaczynamy" class="przycisk przycisk-dobry" type="button" disabled>🚀 Zaczynamy!</button>
-    <a class="przycisk przycisk-jasny przycisk-maly" id="link-druk" href="druk.html?g=${encodeURIComponent(gra.id)}">🖨️ Wydrukuj karty</a>
-  `, { rodzic: false });
+    <button id="zaczynamy" class="przycisk przycisk-dobry przycisk-start" type="button" disabled ${wej(5)}>🚀 Zaczynamy!</button>
+    <a class="przycisk przycisk-jasny przycisk-maly" id="link-druk" href="druk.html?g=${encodeURIComponent(gra.id)}" ${wej(5)}>🖨️ Wydrukuj karty</a>
+  `, { rodzic: false, klasa: 'ekran-konfiguracji' });
 
   const $start = document.getElementById('zaczynamy');
   const $pin = document.getElementById('pin');
   const odswiez = () => {
-    $start.disabled = !(wybor.tryb && wybor.wariant && /^\d{4}$/.test($pin.value));
+    const gotowe = Boolean(wybor.tryb && wybor.wariant && /^\d{4}$/.test($pin.value));
+    if (gotowe && $start.disabled) wybuch($start, { ile: 18, vMax: 380 });
+    $start.disabled = !gotowe;
   };
   const zaznacz = (atr, wartosc) => {
     $ekran.querySelectorAll(`[data-${atr}]`).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset[atr] === wartosc)));
+    dzwiek('klik');
   };
   na('[data-gra]', async (e) => {
     wybor.gra = e.currentTarget.dataset.gra;
@@ -187,6 +252,8 @@ async function ekranKonfiguracji() {
     if (wybor.gra !== gra.id) await ustawGre(wybor.gra);
     stan = nowyStan({ tryb: wybor.tryb, wariant: wybor.wariant, pin: $pin.value });
     zapiszStan();
+    postepNaDrodze = 0;
+    dzwiek('wrrum');
     ekranSzukania({ powitanie: true });
   });
 }
@@ -202,24 +269,35 @@ function ekranSzukania({ brawo = false, pominieta = false, powitanie = false } =
     brawo ? 'Brawo!' : '',
     w.maluch,
   ].filter(Boolean).join(' ');
+  const dymek = powitanie
+    ? (starszak ? gra.motyw.powitanie?.starszak : gra.motyw.powitanie?.maluch)
+    : brawo ? 'Hurra! Jedziemy dalej! Wrrrum!' : `Gdzie się schowała karta nr ${nr}?`;
 
   pokaz(`
     ${naglowek()}
-    ${brawo ? `<div class="panel zrobione centrum"><h2>🎉 Brawo! Karta nr ${nr - 1} zaliczona!</h2></div>` : ''}
-    ${pominieta ? `<div class="panel centrum"><p>Rodzic przesunął grę dalej.</p></div>` : ''}
-    ${powitanie ? `<div class="panel centrum"><p class="zagadka">${esc(starszak ? gra.motyw.powitanie?.starszak : gra.motyw.powitanie?.maluch)}</p></div>` : ''}
-    <h1 class="centrum">Szukajcie karty</h1>
-    <div class="wielki-numer" data-szukana="${nr}">${nr}</div>
-    <div class="panel centrum" data-wskazowka>
-      ${maluch ? `<div class="duza-ikona" aria-hidden="true">${esc(w.obrazek)}</div>` : ''}
+    ${brawo ? `<div class="wstega" data-brawo ${wej(1)}><span>🎉 Brawo! Karta nr ${nr - 1} zaliczona!</span></div>` : ''}
+    ${pominieta ? `<div class="panel centrum" ${wej(1)}><p>Rodzic przesunął grę dalej.</p></div>` : ''}
+    <section class="scena-maskotki" ${wej(1)}>
+      ${maskotka(brawo ? 'cieszy' : 'macha')}
+      <p class="dymek">${esc(dymek)}</p>
+    </section>
+    <h1 class="centrum tytul-szukania" ${wej(2)}>Szukajcie karty</h1>
+    <div class="medal" data-szukana="${nr}" ${wej(3)}><span class="medal-cyfra">${nr}</span></div>
+    <div class="panel wskazowka" data-wskazowka ${wej(4)}>
+      ${maluch ? `<div class="radar" aria-hidden="true"><span class="radar-fala"></span><span class="radar-fala"></span><span class="radar-obrazek">${esc(w.obrazek)}</span></div>` : ''}
       <p class="zagadka">${esc(starszak ? w.starszak : w.maluch)}</p>
       ${maluch ? przyciskMowy(w.maluch, '🔊 Posłuchaj, gdzie szukać') : ''}
     </div>
-    ${przyciskSkanu}
-    <p class="cichy centrum">Znaleźliście kartę? Zeskanujcie kod QR tym przyciskiem albo aparatem telefonu.</p>
-  `);
+    ${przyciskSkanu(5)}
+    <p class="cichy centrum" ${wej(6)}>Znaleźliście kartę? Zeskanujcie kod QR tym przyciskiem albo aparatem telefonu.</p>
+  `, { klasa: 'ekran-szukania' });
   podepnijMowe();
   podepnijSkan();
+  if (brawo) {
+    dzwiek('dobrze');
+    deszcz({ ile: 90 });
+    wibruj([40, 60, 40]);
+  }
   if (maluch) mow(tekstMowy);
 }
 
@@ -228,24 +306,30 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
   const s = gra.stacje[nr - 1];
   const czesci = potrzebneCzesci(stan.tryb);
   const zrobione = new Set(stan.czesci[nr] ?? []);
-  const panelMalucha = () => {
+  const panelMalucha = (d = 3) => {
     const m = s.maluch;
     if (zrobione.has('maluch')) return `<div class="panel panel-maluch zrobione centrum" data-czesc="maluch"><span class="etykieta-czesci">Maluch</span><h2>✅ Brawo, maluchu!</h2></div>`;
-    return `<div class="panel panel-maluch" data-czesc="maluch">
+    return `<div class="panel panel-maluch" data-czesc="maluch" ${wej(d)}>
       ${czesci.length > 1 ? '<span class="etykieta-czesci">Dla malucha</span>' : ''}
-      ${przyciskMowy(m.zagadka, '🔊 Posłuchaj zagadki')}
-      <p class="cichy">${esc(m.zagadka)}</p>
+      <div class="pytanie">
+        ${maskotka('maly')}
+        <div class="dymek dymek-pytanie">
+          ${przyciskMowy(m.zagadka, '🔊 Posłuchaj zagadki')}
+          <p class="cichy">${esc(m.zagadka)}</p>
+        </div>
+      </div>
       <div class="opcje ${m.opcje.length === 3 ? 'trzy' : ''}">
-        ${m.opcje.map((o, i) => `<button class="opcja" type="button" data-opcja="${i}" aria-label="${esc(o.nazwa)}">
+        ${m.opcje.map((o, i) => `<button class="opcja" type="button" data-opcja="${i}" aria-label="${esc(o.nazwa)}" style="--k:${i}">
           <span class="${[...o.obrazek].length > 2 ? 'wiele' : ''}" aria-hidden="true">${esc(o.obrazek)}</span></button>`).join('')}
       </div>
     </div>`;
   };
-  const panelStarszaka = () => {
+  const panelStarszaka = (d = 4) => {
     const st = s.starszak;
     if (zrobione.has('starszak')) return `<div class="panel panel-starszak zrobione centrum" data-czesc="starszak"><span class="etykieta-czesci">Starszak</span><h2>✅ Dobra odpowiedź!</h2></div>`;
-    return `<div class="panel panel-starszak" data-czesc="starszak">
+    return `<div class="panel panel-starszak" data-czesc="starszak" ${wej(d)}>
       ${czesci.length > 1 ? '<span class="etykieta-czesci">Dla starszaka</span>' : ''}
+      ${czesci.length === 1 ? `<div class="pytanie">${maskotka('maly')}<p class="dymek">Zagadka dla was!</p></div>` : ''}
       <p class="zagadka">${esc(st.zagadka)}</p>
       <form data-odpowiedz novalidate>
         <input class="pole" name="odp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Wasza odpowiedź" placeholder="Wpiszcie odpowiedź">
@@ -257,24 +341,38 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
 
   pokaz(`
     ${naglowek()}
-    <h1 class="centrum">Karta nr ${nr} ${gra.motyw.ikona}</h1>
+    <h1 class="tytul-karty" ${wej(1)}><span class="odznaka" aria-hidden="true">${nr}</span><span>Karta nr ${nr}</span></h1>
     ${czesci.includes('maluch') ? panelMalucha() : ''}
     ${czesci.includes('starszak') ? panelStarszaka() : ''}
-  `);
+  `, { klasa: 'ekran-stacji' });
   podepnijMowe();
+  if (poSkanie) { dzwiek('klik'); wibruj(25); }
 
   let bledneProby = 0;
-  const zalicz = (czesc) => {
+  const zalicz = (czesc, $zrodlo) => {
     const koniecStacji = zaliczCzesc(stan, nr, czesc);
     if (stan.aktualna >= liczbaStacji()) stan.koniec = Date.now();
     zapiszStan();
+    wybuch($zrodlo, { ile: 50 });
+    dzwiek('dobrze');
+    wibruj([30, 40, 60]);
+    nastroj('cieszy', 1200);
     if (koniecStacji) {
       setTimeout(() => (stan.aktualna >= liczbaStacji() ? ekranSkarbu() : ekranSzukania({ brawo: true })), 1100);
     } else {
       zrobione.add(czesc);
       const stary = $ekran.querySelector(`[data-czesc="${czesc}"]`);
-      stary.replaceWith(h(czesc === 'maluch' ? panelMalucha() : panelStarszaka()));
+      setTimeout(() => {
+        stary.replaceWith(h(czesc === 'maluch' ? panelMalucha() : panelStarszaka()));
+        // Druga część czeka — przewiń do niej, żeby starszak od razu wiedział, że teraz jego kolej.
+        $ekran.querySelector('[data-czesc]:not(.zrobione)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 650);
     }
+  };
+  const zle = () => {
+    dzwiek('zle');
+    wibruj(120);
+    nastroj('smutny', 1100);
   };
 
   na('[data-opcja]', (e) => {
@@ -283,13 +381,15 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
     const opcja = s.maluch.opcje[i];
     if (i === s.maluch.poprawna) {
       btn.classList.add('dobra');
+      $ekran.querySelectorAll('[data-opcja]').forEach((b) => { if (b !== btn) b.classList.add('zgaszona'); });
       mow(`${opcja.nazwa}! Brawo!`);
-      zalicz('maluch');
+      zalicz('maluch', btn);
     } else {
       btn.classList.remove('zla');
       void btn.offsetWidth; // restart animacji potrząśnięcia
       btn.classList.add('zla');
       mow(`To jest ${opcja.nazwa}. Spróbuj jeszcze raz!`);
+      zle();
     }
   });
 
@@ -301,8 +401,9 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
     if (czyPoprawna(pole.value, s.starszak.odpowiedzi)) {
       $kom.textContent = '🎉 Tak! Dobra odpowiedź!';
       $kom.className = 'komunikat dobrze';
+      pole.classList.add('pole-dobrze');
       pole.blur();
-      zalicz('starszak');
+      zalicz('starszak', pole);
     } else {
       bledneProby += 1;
       const { litera, dlugosc } = podpowiedzLiter(s.starszak.odpowiedzi);
@@ -310,7 +411,11 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
         ? `Podpowiedź: zaczyna się na „${litera}” i ma ${dlugosc} znaków.`
         : 'Jeszcze nie. Pomyślcie i spróbujcie jeszcze raz!';
       $kom.className = 'komunikat zle';
+      pole.classList.remove('pole-zle');
+      void pole.offsetWidth;
+      pole.classList.add('pole-zle');
       pole.select();
+      zle();
     }
   }, 'submit');
 
@@ -323,26 +428,27 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
 function ekranKomunikatu(typ, nr) {
   const szukana = stan ? stan.aktualna + 1 : 1;
   const tresci = {
-    'za-wczesnie': { ikona: '🙈', tytul: 'To jeszcze nie ta kryjówka!',
+    'za-wczesnie': { ikona: '🙈', nastroj: 'smutny', tytul: 'To jeszcze nie ta kryjówka!',
       tekst: `Ta karta poczeka na swoją kolej. Najpierw znajdźcie kartę nr ${szukana}. Odłóżcie tę kartę tam, gdzie leżała.` },
-    'juz-byla': { ikona: '👍', tytul: 'Tę kartę już znaleźliście!', tekst: `Teraz szukacie karty nr ${szukana}.` },
-    obca: { ikona: '🤔', tytul: 'Ta karta nie pasuje do gry', tekst: 'Ten kod jest z innej gry albo z innego wydruku. Poproście rodzica o pomoc.' },
-    'nie-rozpoczeta': { ikona: '⏳', tytul: 'Gra jeszcze się nie zaczęła', tekst: 'Poproście rodzica, żeby uruchomił grę na tym telefonie.' },
+    'juz-byla': { ikona: '👍', nastroj: 'macha', tytul: 'Tę kartę już znaleźliście!', tekst: `Teraz szukacie karty nr ${szukana}.` },
+    obca: { ikona: '🤔', nastroj: 'smutny', tytul: 'Ta karta nie pasuje do gry', tekst: 'Ten kod jest z innej gry albo z innego wydruku. Poproście rodzica o pomoc.' },
+    'nie-rozpoczeta': { ikona: '⏳', nastroj: 'macha', tytul: 'Gra jeszcze się nie zaczęła', tekst: 'Poproście rodzica, żeby uruchomił grę na tym telefonie.' },
   }[typ];
   pokaz(`
     ${naglowek()}
-    <div class="panel centrum" data-komunikat="${typ}">
-      <div class="duza-ikona" aria-hidden="true">${tresci.ikona}</div>
+    <div class="panel centrum komunikat-panel" data-komunikat="${typ}" ${wej(1)}>
+      <div class="komunikat-scena">${maskotka(tresci.nastroj)}<span class="komunikat-ikona" aria-hidden="true">${tresci.ikona}</span></div>
       <h1>${tresci.tytul}</h1>
       <p class="zagadka">${esc(tresci.tekst)}</p>
       ${przyciskMowy(`${tresci.tytul} ${tresci.tekst}`)}
     </div>
-    ${stan ? `<button class="przycisk" type="button" data-dalej>🔎 Gdzie szukać karty nr ${szukana}?</button>`
-    : `<button class="przycisk" type="button" data-konfiguruj>👤 Jestem rodzicem — ustaw grę</button>`}
-  `);
+    ${stan ? `<button class="przycisk" type="button" data-dalej ${wej(2)}>🔎 Gdzie szukać karty nr ${szukana}?</button>`
+    : `<button class="przycisk" type="button" data-konfiguruj ${wej(2)}>👤 Jestem rodzicem — ustaw grę</button>`}
+  `, { klasa: 'ekran-komunikatu' });
   podepnijMowe();
   na('[data-dalej]', () => ekranGlowny());
   na('[data-konfiguruj]', () => ekranKonfiguracji());
+  dzwiek(typ === 'juz-byla' || typ === 'nie-rozpoczeta' ? 'klik' : 'zle');
   mow(tresci.tytul, { poSkanie: true });
 }
 
@@ -353,29 +459,40 @@ function ekranSkarbu() {
   pokaz(`
     ${naglowek()}
     <div class="skarb" data-skarb>
-      <div class="duza-ikona" aria-hidden="true">${esc(gra.motyw.skarb.ikona ?? '🎁')}</div>
-      <h1>${esc(gra.motyw.skarb.tytul)}</h1>
-      <p class="zagadka">${esc(gra.motyw.skarb.tekst)}</p>
-      <div class="panel">
-        <h2>Gdzie jest skarb?</h2>
-        <div class="duza-ikona" aria-hidden="true">${esc(ostatnia.obrazek)}</div>
+      <h1 class="tytul-skarbu" ${wej(1)}>${esc(gra.motyw.skarb.tytul)}</h1>
+      <div class="scena-skarbu" ${wej(2)}>
+        <div class="promienie" aria-hidden="true"></div>
+        <button class="skrzynia" type="button" data-skrzynia aria-label="Otwórz skrzynię skarbu">${skrzyniaSVG()}</button>
+        ${maskotka('tanczy')}
+      </div>
+      <p class="podpowiedz-skrzyni" ${wej(3)}>👆 Dotknijcie skrzyni!</p>
+      <p class="zagadka" ${wej(3)}>${esc(gra.motyw.skarb.tekst)}</p>
+      <div class="panel" ${wej(4)}>
+        <h2>Gdzie jest prawdziwy skarb?</h2>
+        <div class="radar" aria-hidden="true"><span class="radar-fala"></span><span class="radar-fala"></span><span class="radar-obrazek">${esc(ostatnia.obrazek)}</span></div>
         <p class="zagadka">${esc(starszak ? ostatnia.starszak : ostatnia.maluch)}</p>
         ${przyciskMowy(ostatnia.maluch)}
       </div>
     </div>
-    <div class="konfetti" aria-hidden="true"></div>
-  `);
+  `, { klasa: 'ekran-skarbu' });
   podepnijMowe();
-  const $k = $ekran.querySelector('.konfetti');
-  const znaki = ['🎉', '⭐', '🎊', gra.motyw.ikona, '🎈'];
-  for (let i = 0; i < 28; i++) {
-    const s = document.createElement('span');
-    s.textContent = znaki[i % znaki.length];
-    s.style.left = `${Math.random() * 100}%`;
-    s.style.animationDuration = `${2.5 + Math.random() * 2.5}s`;
-    s.style.animationDelay = `${Math.random() * 1.5}s`;
-    $k.append(s);
-  }
+  const $scena = $ekran.querySelector('.scena-skarbu');
+  const $skrzynia = $ekran.querySelector('[data-skrzynia]');
+  let otwarta = false;
+  const otworz = () => {
+    if (otwarta) { fontanna($skrzynia, { ile: 30 }); dzwiek('klik'); return; }
+    otwarta = true;
+    $scena.classList.add('otwarta');
+    $ekran.querySelector('.podpowiedz-skrzyni').textContent = '✨ Hurra! ✨';
+    dzwiek('skrzynia');
+    setTimeout(() => dzwiek('fanfara'), 350);
+    wibruj([60, 50, 60, 50, 200]);
+    setTimeout(() => fontanna($skrzynia), 250);
+    setTimeout(() => deszcz({ ile: 160, ksztalty: ['konfetti', 'pasek', 'gwiazda', 'emoji'], emoji: [gra.motyw.ikona, '⭐', '🎈'] }), 500);
+  };
+  $skrzynia.addEventListener('click', otworz);
+  // Gdy nikt nie dotknie, skrzynia otwiera się sama — finał nie może przepaść.
+  setTimeout(() => { if ($skrzynia.isConnected) otworz(); }, 4500);
   mow(`${gra.motyw.skarb.tytul} ${ostatnia.maluch}`);
 }
 
@@ -394,7 +511,7 @@ function ekranPinu() {
       <button class="przycisk przycisk-jasny" type="button" data-cyfra="0">0</button>
       <button class="przycisk przycisk-jasny" type="button" data-kasuj aria-label="Skasuj cyfrę">⌫</button>
     </div>
-  `, { rodzic: false });
+  `, { rodzic: false, klasa: 'ekran-rodzica' });
   const $kropki = $ekran.querySelector('[data-kropki]');
   const $kom = $ekran.querySelector('.komunikat');
   const rysuj = () => { $kropki.textContent = '●'.repeat(wpisany.length) + '○'.repeat(4 - wpisany.length); };
@@ -405,6 +522,9 @@ function ekranPinu() {
     if (wpisany.length === 4) {
       if (wpisany === stan.pin) { ekranRodzica(); return; }
       $kom.textContent = 'Zły PIN, spróbuj jeszcze raz';
+      $kropki.classList.remove('pin-zly');
+      void $kropki.offsetWidth;
+      $kropki.classList.add('pin-zly');
       wpisany = '';
       setTimeout(rysuj, 300);
     }
@@ -450,13 +570,13 @@ function ekranRodzica(komunikat = '') {
     <div class="panel">
       <h2>Zmień tryb</h2>
       <div class="wybory">
-        ${Object.entries(TRYBY).map(([k, v]) => `<button class="wybor" type="button" data-zmien-tryb="${k}" aria-pressed="${stan.tryb === k}">${v}</button>`).join('')}
+        ${Object.entries(TRYBY).map(([k, v]) => `<button class="wybor" type="button" data-zmien-tryb="${k}" aria-pressed="${stan.tryb === k}">${v}<span class="ptaszek" aria-hidden="true">✓</span></button>`).join('')}
       </div>
     </div>
     <a class="przycisk przycisk-jasny przycisk-maly" href="druk.html?g=${encodeURIComponent(gra.id)}&w=${stan.wariant}">🖨️ Karty do druku i ściągawka</a>
     <button class="przycisk przycisk-zly przycisk-maly" type="button" data-reset>🔄 Zacznij grę od nowa</button>
     <button class="przycisk przycisk-dobry" type="button" data-wroc>⬅️ Wróć do gry</button>
-  `, { rodzic: false });
+  `, { rodzic: false, klasa: 'ekran-rodzica' });
 
   na('[data-pomin]', () => {
     pominStacje(stan, n);
@@ -482,6 +602,7 @@ function ekranRodzica(komunikat = '') {
     }
     zapisz(kluczStanu(gra.id), null);
     stan = null;
+    postepNaDrodze = null;
     ekranKonfiguracji();
   });
 }

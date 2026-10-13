@@ -180,6 +180,8 @@ test('przyciski są duże, a ekran nie przewija się w bok', async ({ page }) =>
   await ustawGre(page, { tryb: 'mieszany' });
   await skanuj(page, 1);
   await expect(page.locator('[data-opcja]').first()).toBeVisible();
+  // Mierzymy po animacjach wjazdu (te nieskończone — kołysanie, poświata — nie zmieniają rozmiaru).
+  await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect.getTiming().iterations === Infinity));
   const szer = await page.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
   expect(szer[0]).toBeLessThanOrEqual(szer[1]);
   const wysokosci = await page.locator('main .przycisk, main .opcja').evaluateAll((els) =>

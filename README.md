@@ -7,6 +7,15 @@ Na końcu jest ekran skarbu.
 **Gra:** https://lolekst1.github.io/podchody/
 **Karty do druku:** https://lolekst1.github.io/podchody/druk.html
 
+## Co zobaczą dzieci
+
+Tygrysek w goglach motocyklowych prowadzi przez grę: macha na powitanie, rusza pyszczkiem,
+kiedy telefon czyta zagadkę, skacze z radości po dobrej odpowiedzi i przechyla głowę po złej.
+U góry ekranu motor z tygryskiem jedzie po drodze do kolejnej flagi po każdej zaliczonej karcie.
+Na końcu dzieci otwierają dotykiem skrzynię skarbu i lecą z niej monety, gwiazdy i konfetti.
+Dźwięki (warkot motoru, fanfara) i wibracje są generowane w telefonie, bez pobierania plików.
+Przycisk 🔊 w rogu je wycisza. Przy włączonym w systemie „ograniczeniu ruchu” animacje się wyłączają.
+
 ## Tryby
 
 | Tryb | Dla kogo | Jak wygląda zagadka |
@@ -84,6 +93,8 @@ npm test             # testy logiki + testy w przeglądarce (widok telefonu Pixe
   (`.github/workflows/wdrozenie.yml`) po testach, przy każdym pushu na `main`.
 - Po zmianie plików aplikacji podbij `WERSJA` w `app/sw.js`, żeby telefony pobrały nową wersję.
 - `raport/` po `npm test` zawiera zrzuty ekranów z przejść gry i PDF-y z kartami.
+- `node scripts/film.mjs` (przy działającym `PORT=8123 npm start`) nagrywa film z rozgrywki: `raport/film-rozgrywki.webm`.
+- Krój pisma: Baloo 2 (SIL Open Font License), dołączony w `app/fonty/`, żeby działał offline.
 
 ## Znane ograniczenia
 

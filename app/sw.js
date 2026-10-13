@@ -1,6 +1,6 @@
 // Service worker: po pierwszym otwarciu cała gra działa bez internetu.
 // Przy każdej zmianie plików aplikacji podbij WERSJA — stary cache zostanie usunięty.
-const WERSJA = 'podchody-v2';
+const WERSJA = 'podchody-v3';
 const PLIKI = [
   './',
   'index.html',
@@ -13,6 +13,13 @@ const PLIKI = [
   'js/mowa.js',
   'js/skaner.js',
   'js/druk.js',
+  'js/maskotka.js',
+  'js/sceny.js',
+  'js/efekty.js',
+  'fonty/baloo-2-latin.woff2',
+  'fonty/baloo-2-latin-ext.woff2',
+  'fonty/LICENSE-OFL.txt',
+  'ikony/liscie.svg',
   'vendor/jsQR.js',
   'vendor/qrcode.js',
   'ikony/ikona.svg',

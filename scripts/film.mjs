@@ -1,0 +1,32 @@
+// Nagrywa film z rozgrywki w widoku telefonu (raport/film-rozgrywki.webm) — do pokazania animacji.
+// Wymaga działającego serwera: PORT=8123 npm start
+import { chromium, devices } from '@playwright/test';
+import { renameSync, mkdirSync } from 'node:fs';
+const B = 'http://localhost:8123/';
+mkdirSync('raport/film', { recursive: true });
+const przegladarka = await chromium.launch();
+const ctx = await przegladarka.newContext({ ...devices['Pixel 7'], locale: 'pl-PL', recordVideo: { dir: 'raport/film', size: { width: 412, height: 839 } } });
+const p = await ctx.newPage();
+await p.addInitScript(() => { Object.defineProperty(window, 'speechSynthesis', { value: { speak() {}, cancel() {}, getVoices: () => [] } }); });
+const chwila = (ms) => p.waitForTimeout(ms);
+await p.goto(B); await chwila(1800);
+await p.click('[data-tryb=mieszany]'); await chwila(500);
+await p.click('[data-wariant=dom]'); await chwila(500);
+await p.fill('#pin', '1234'); await chwila(900);
+await p.click('#zaczynamy'); await chwila(2600);
+await p.goto(B + '?g=tygrysy-i-motory&s=3&t=kl8w3d'); await chwila(2200);
+await p.click('[data-dalej]'); await chwila(1200);
+await p.goto(B + '?g=tygrysy-i-motory&s=1&t=tg7k2m'); await chwila(2000);
+await p.click('[data-opcja="0"]'); await chwila(1300);
+await p.click('[data-opcja="1"]'); await chwila(1600);
+await p.locator('[data-czesc=starszak] input').scrollIntoViewIfNeeded();
+await p.locator('[data-czesc=starszak] input').pressSequentially('kot', { delay: 180 }); await chwila(400);
+await p.click('[data-czesc=starszak] button[type=submit]'); await chwila(3600);
+await p.evaluate(() => { const k = 'podchody:stan:tygrysy-i-motory'; const s = JSON.parse(localStorage.getItem(k)); s.aktualna = 6; s.otwarta = null; localStorage.setItem(k, JSON.stringify(s)); });
+await p.goto(B); await chwila(1800);
+await p.click('[data-skrzynia]'); await chwila(4500);
+const wideo = p.video();
+await ctx.close();
+renameSync(await wideo.path(), 'raport/film-rozgrywki.webm');
+await przegladarka.close();
+console.log('raport/film-rozgrywki.webm');
