@@ -4,8 +4,10 @@
 // Wzorowane na tools/generate-tts.mjs z gry Esperanta-Aventura.
 //
 // Użycie:
-//   OPENAI_API_KEY=sk-... node scripts/generuj-mowe.mjs            # wszystkie gry
-//   OPENAI_API_KEY=sk-... node scripts/generuj-mowe.mjs --gra stadnina-lucji
+//   node scripts/generuj-mowe.mjs                                    # wszystkie gry
+//   node scripts/generuj-mowe.mjs --gra stadnina-lucji
+// Klucz: sekret sieciowy środowiska Claude (dokleja nagłówek Authorization do zapytań na
+// api.openai.com — klucza nie widać w kontenerze) albo zmienna OPENAI_API_KEY na komputerze.
 //   node scripts/generuj-mowe.mjs --dry-run                          # lista kwestii, bez API
 //   ... --regen "kryjówka|Brawo"                                      # nagraj ponownie pasujące
 //
@@ -53,11 +55,12 @@ async function zapytanie(klucz, url, body) {
   for (let proba = 1; ; proba++) {
     const odp = await fetch(url, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${klucz}`, 'Content-Type': 'application/json' },
+      headers: { ...(klucz ? { Authorization: `Bearer ${klucz}` } : {}), 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
     if (odp.ok) return odp;
     const blad = await odp.text().catch(() => '');
+    if (odp.status === 401) throw new Error('OpenAI 401: brak klucza — ustaw sekret sieciowy dla api.openai.com albo zmienną OPENAI_API_KEY');
     if (proba >= 3 || (odp.status < 500 && odp.status !== 429)) throw new Error(`OpenAI ${odp.status}: ${blad.slice(0, 200)}`);
     await new Promise((r) => setTimeout(r, 2000 * proba));
   }
@@ -87,10 +90,7 @@ async function nagraj(klucz, lektor, tekst) {
 
 async function main() {
   const klucz = process.env.OPENAI_API_KEY;
-  if (!klucz && !dryRun) {
-    console.error('Brak OPENAI_API_KEY. Ustaw zmienną albo uruchom z --dry-run.');
-    process.exit(1);
-  }
+  if (!klucz && !dryRun) console.log('Brak OPENAI_API_KEY w zmiennych — zakładam sekret sieciowy środowiska (nagłówek dokleja serwer pośredniczący).');
   const ids = JSON.parse(await readFile(path.join(APP, 'gry/index.json'), 'utf8')).gry.filter((id) => !tylkoGra || id === tylkoGra);
   let nowe = 0, pominiete = 0, bledy = 0;
 
