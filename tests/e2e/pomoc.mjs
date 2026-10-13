@@ -4,17 +4,26 @@ import { expect } from '@playwright/test';
 export const gra = JSON.parse(readFileSync('app/gry/tygrysy-i-motory.json', 'utf8'));
 export const adres = (nr, token = gra.stacje[nr - 1].token) => `./?g=${gra.id}&s=${nr}&t=${token}`;
 
-// Zastępuje syntezę mowy nagrywarką: test widzi, co telefon przeczytałby dziecku.
+// Zastępuje syntezę mowy i odtwarzanie nagrań nagrywarką: test widzi, co telefon
+// przeczytałby dziecku (__mowa), a osobno — czy głosem syntezy, czy z nagrania.
 export async function nagrywajMowe(page) {
   await page.addInitScript(() => {
     window.__mowa = [];
+    window.__synteza = [];
+    window.__nagrania = [];
+    document.addEventListener('mowa', (e) => { if (e.detail.trwa) window.__mowa.push(e.detail.tekst); });
     const synteza = {
-      speak: (w) => window.__mowa.push(w.text),
+      speak: (w) => { window.__synteza.push(w.text); w.onstart?.(); setTimeout(() => w.onend?.(), 10); },
       cancel: () => {},
       getVoices: () => [],
       addEventListener: () => {},
     };
     Object.defineProperty(window, 'speechSynthesis', { value: synteza, configurable: true });
+    HTMLMediaElement.prototype.play = function play() {
+      window.__nagrania.push(this.src);
+      setTimeout(() => this.dispatchEvent(new Event('ended')), 10);
+      return Promise.resolve();
+    };
   });
 }
 export const mowa = (page) => page.evaluate(() => window.__mowa);

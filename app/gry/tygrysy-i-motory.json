@@ -25,7 +25,8 @@
     "styl": "tygrysy",
     "maskotka": {
       "gatunek": "tygrys",
-      "imie": "Tygrysek"
+      "imie": "Tygrysek",
+      "glos": "Puck"
     },
     "pojazd": "motor",
     "dzwiekRuchu": "wrrum",

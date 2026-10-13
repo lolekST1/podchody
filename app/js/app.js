@@ -1,9 +1,9 @@
 import {
   TRYBY, WARIANTY, normalizuj, czyPoprawna, podpowiedzLiter, sprawdzGre,
   nowyStan, ocenSkan, potrzebneCzesci, zaliczCzesc, pominStacje, cofnijStacje,
-  biezacaWskazowka, adresKarty, czytajAdres,
+  biezacaWskazowka, adresKarty, czytajAdres, komunikatSkanu, mowaDobrze, mowaZle,
 } from './logika.js';
-import { mow, przerwijMowe, mowaDostepna } from './mowa.js';
+import { mow, przerwijMowe, mowaDostepna, wczytajNagrania } from './mowa.js';
 import { otworzSkaner } from './skaner.js';
 import { maskotkaSVG, nastroj } from './maskotka.js';
 import { skrzyniaSVG, pojazdSVG } from './sceny.js';
@@ -112,10 +112,10 @@ function podepnijNaglowek() {
 
 function przyciskMowy(tekst, etykieta = '🔊 Posłuchaj') {
   if (!mowaDostepna()) return '';
-  return `<button class="przycisk przycisk-jasny przycisk-mowy" type="button" data-mow="${esc(tekst)}">${etykieta}</button>`;
+  return `<button class="przycisk przycisk-jasny przycisk-mowy" type="button" data-mow="${esc(JSON.stringify([].concat(tekst)))}">${etykieta}</button>`;
 }
 function podepnijMowe() {
-  na('[data-mow]', (e) => mow(e.currentTarget.dataset.mow));
+  na('[data-mow]', (e) => mow(JSON.parse(e.currentTarget.dataset.mow)));
 }
 const przyciskSkanu = (d) => `<button class="przycisk przycisk-skanuj" type="button" data-skanuj ${wej(d)}><span class="ikona-aparatu" aria-hidden="true">📷</span> Skanuj kartę</button>`;
 function podepnijSkan() {
@@ -172,6 +172,7 @@ async function ustawGre(id) {
   // Paleta, tło i wygląd drogi zależą od stylu gry (css: [data-styl]).
   document.body.dataset.styl = gra.motyw.styl ?? 'tygrysy';
   document.querySelector('meta[name=theme-color]')?.setAttribute('content', gra.motyw.kolor ?? '#c2410c');
+  await wczytajNagrania(gra);
 }
 
 async function obsluzSkan(dane) {
@@ -286,7 +287,7 @@ function ekranSzukania({ brawo = false, pominieta = false, powitanie = false } =
     powitanie ? gra.motyw.powitanie?.maluch : '',
     brawo ? 'Brawo!' : '',
     w.maluch,
-  ].filter(Boolean).join(' ');
+  ];
   const dymek = powitanie
     ? (starszak ? gra.motyw.powitanie?.starszak : gra.motyw.powitanie?.maluch)
     : brawo ? motyw().okrzyk : `Gdzie się schowała karta nr ${nr}?`;
@@ -400,13 +401,13 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
     if (i === s.maluch.poprawna) {
       btn.classList.add('dobra');
       $ekran.querySelectorAll('[data-opcja]').forEach((b) => { if (b !== btn) b.classList.add('zgaszona'); });
-      mow(`${opcja.nazwa}! Brawo!`);
+      mow(mowaDobrze(opcja.nazwa));
       zalicz('maluch', btn);
     } else {
       btn.classList.remove('zla');
       void btn.offsetWidth; // restart animacji potrząśnięcia
       btn.classList.add('zla');
-      mow(`To jest ${opcja.nazwa}. Spróbuj jeszcze raz!`);
+      mow(mowaZle(opcja.nazwa));
       zle();
     }
   });
@@ -446,19 +447,21 @@ function ekranStacji(nr, { poSkanie = false } = {}) {
 function ekranKomunikatu(typ, nr) {
   const szukana = stan ? stan.aktualna + 1 : 1;
   const tresci = {
-    'za-wczesnie': { ikona: '🙈', nastroj: 'smutny', tytul: 'To jeszcze nie ta kryjówka!',
-      tekst: `Ta karta poczeka na swoją kolej. Najpierw znajdźcie kartę nr ${szukana}. Odłóżcie tę kartę tam, gdzie leżała.` },
-    'juz-byla': { ikona: '👍', nastroj: 'macha', tytul: 'Tę kartę już znaleźliście!', tekst: `Teraz szukacie karty nr ${szukana}.` },
-    obca: { ikona: '🤔', nastroj: 'smutny', tytul: 'Ta karta nie pasuje do gry', tekst: 'Ten kod jest z innej gry albo z innego wydruku. Poproście rodzica o pomoc.' },
-    'nie-rozpoczeta': { ikona: '⏳', nastroj: 'macha', tytul: 'Gra jeszcze się nie zaczęła', tekst: 'Poproście rodzica, żeby uruchomił grę na tym telefonie.' },
-  }[typ];
+    ...komunikatSkanu(typ, szukana),
+    ...{
+      'za-wczesnie': { ikona: '🙈', nastroj: 'smutny' },
+      'juz-byla': { ikona: '👍', nastroj: 'macha' },
+      obca: { ikona: '🤔', nastroj: 'smutny' },
+      'nie-rozpoczeta': { ikona: '⏳', nastroj: 'macha' },
+    }[typ],
+  };
   pokaz(`
     ${naglowek()}
     <div class="panel centrum komunikat-panel" data-komunikat="${typ}" ${wej(1)}>
       <div class="komunikat-scena">${maskotka(tresci.nastroj)}<span class="komunikat-ikona" aria-hidden="true">${tresci.ikona}</span></div>
       <h1>${tresci.tytul}</h1>
       <p class="zagadka">${esc(tresci.tekst)}</p>
-      ${przyciskMowy(`${tresci.tytul} ${tresci.tekst}`)}
+      ${przyciskMowy([tresci.tytul, tresci.tekst])}
     </div>
     ${stan ? `<button class="przycisk" type="button" data-dalej ${wej(2)}>🔎 Gdzie szukać karty nr ${szukana}?</button>`
     : `<button class="przycisk" type="button" data-konfiguruj ${wej(2)}>👤 Jestem rodzicem — ustaw grę</button>`}
@@ -511,7 +514,7 @@ function ekranSkarbu() {
   $skrzynia.addEventListener('click', otworz);
   // Gdy nikt nie dotknie, skrzynia otwiera się sama — finał nie może przepaść.
   setTimeout(() => { if ($skrzynia.isConnected) otworz(); }, 4500);
-  mow(`${gra.motyw.skarb.tytul} ${ostatnia.maluch}`);
+  mow([gra.motyw.skarb.tytul, ostatnia.maluch]);
 }
 
 // ---------- Panel rodzica ----------

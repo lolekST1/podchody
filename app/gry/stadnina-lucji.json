@@ -12,7 +12,8 @@
     "styl": "konie",
     "maskotka": {
       "gatunek": "kon",
-      "imie": "Kucyk Iskierka"
+      "imie": "Kucyk Iskierka",
+      "glos": "Leda"
     },
     "pojazd": "kucyk",
     "dzwiekRuchu": "patataj",

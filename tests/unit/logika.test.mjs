@@ -2,11 +2,11 @@
 // spójność pliku gry (wymaganie 1) i lista plików offline (wymaganie 4).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import {
   czyPoprawna, normalizuj, sprawdzGre, nowyStan, ocenSkan, zaliczCzesc,
-  pominStacje, cofnijStacje, biezacaWskazowka, adresKarty, czytajAdres,
+  pominStacje, cofnijStacje, biezacaWskazowka, adresKarty, czytajAdres, tekstyMowy, plikNagrania,
 } from '../../app/js/logika.js';
 
 const gra = JSON.parse(readFileSync('app/gry/tygrysy-i-motory.json', 'utf8'));
@@ -143,10 +143,38 @@ test('service worker zapisuje offline każdy plik aplikacji', () => {
     if (statSync(s).isDirectory()) przejdz(s); else pliki.push(relative('app', s));
   });
   przejdz('app');
-  const pomijane = (p) => p === 'sw.js' || p.startsWith('gry/') && p !== 'gry/index.json';
+  // Gry i nagrania głosu trafiają do pamięci telefonu osobno (gry/index.json, wybór gry).
+  const pomijane = (p) => p === 'sw.js' || p.startsWith('nagrania/') || p.startsWith('gry/') && p !== 'gry/index.json';
   for (const p of pliki.filter((x) => !pomijane(x))) assert.ok(sw.includes(`'${p}'`), `brak w sw.js: ${p}`);
   const lista = JSON.parse(readFileSync('app/gry/index.json', 'utf8')).gry;
   for (const p of pliki.filter((x) => x.startsWith('gry/') && x !== 'gry/index.json')) {
     assert.ok(lista.includes(p.slice(4, -5)), `gra ${p} nie jest w gry/index.json`);
   }
+});
+
+test('każda maskotka ma inny głos i nagrania wszystkich czytanych zdań', () => {
+  const glosy = wszystkieGry.map((g) => g.motyw.maskotka?.glos);
+  assert.ok(glosy.every(Boolean), 'każda gra ma "motyw.maskotka.glos"');
+  assert.equal(new Set(glosy).size, glosy.length, 'głosy maskotek się nie powtarzają');
+  for (const g of wszystkieGry) {
+    const glos = g.motyw.maskotka.glos;
+    const lista = JSON.parse(readFileSync(`app/nagrania/${g.id}.json`, 'utf8'));
+    assert.equal(lista.glos, glos, `${g.id}: nagrania innym głosem — uruchom npm run nagrania`);
+    const potrzebne = tekstyMowy(g).map((t) => plikNagrania(glos, t)).sort();
+    assert.deepEqual(lista.pliki, potrzebne, `${g.id}: lista nagrań nieaktualna — uruchom npm run nagrania`);
+    for (const p of potrzebne) assert.ok(existsSync(`app/nagrania/${g.id}/${p}.mp3`), `${g.id}: brak pliku ${p}.mp3`);
+    assert.equal(readdirSync(`app/nagrania/${g.id}`).length, potrzebne.length, `${g.id}: nieużywane nagrania`);
+  }
+});
+
+test('nazwa nagrania zależy od tekstu i głosu', () => {
+  assert.match(plikNagrania('Puck', 'Brawo!'), /^[0-9a-f]{8}$/);
+  assert.equal(plikNagrania('Puck', 'Brawo!'), plikNagrania('Puck', 'Brawo!'));
+  assert.notEqual(plikNagrania('Puck', 'Brawo!'), plikNagrania('Kore', 'Brawo!'));
+  assert.notEqual(plikNagrania('Puck', 'Brawo!'), plikNagrania('Puck', 'Brawo'));
+  const t = tekstyMowy(gra);
+  assert.ok(t.includes(gra.stacje[0].maluch.zagadka));
+  assert.ok(t.includes('tygrys! Brawo!'));
+  assert.ok(t.includes('To jest krowa. Spróbuj jeszcze raz!'));
+  assert.ok(t.some((x) => x.includes('znajdźcie kartę nr 3')), 'komunikaty po skanie dla każdego numeru karty');
 });
