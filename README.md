@@ -125,8 +125,10 @@ npm test             # testy logiki + testy w przeglądarce (widok telefonu Pixe
   czyta na głos (lista zdań: `tekstyMowy()` w `app/js/logika.js`), do `app/nagrania/<id gry>/` jako mp3.
   Dogrywa tylko brakujące zdania i usuwa nieużywane, więc po każdej zmianie tekstów malucha
   trzeba go uruchomić ponownie (test to wyłapie). Klucz API bierze ze zmiennej `GEMINI_API_KEY`
-  (albo dokleja go proxy) i nie trafia do repozytorium. Potrzebny jest `ffmpeg`. Pełna gra to około 60 zdań,
-  kilkadziesiąt groszy i kilka minut (Gemini przyjmuje około 10 nagrań na minutę).
+  (albo dokleja go proxy) i nie trafia do repozytorium. Potrzebny jest `ffmpeg`. Pełna gra to około 60 zdań
+  i kilkadziesiąt groszy. Limity Gemini dla tego modelu: 10 nagrań na minutę i 100 dziennie
+  (reset o północy czasu pacyficznego). Po limicie dziennym skrypt kończy pracę, a następnego dnia
+  dogrywa resztę. Dopóki gra nie ma kompletu nagrań, mówi głosem systemowym.
 - Krój pisma: Baloo 2 (SIL Open Font License), dołączony w `app/fonty/`, żeby działał offline.
 
 ## Znane ograniczenia

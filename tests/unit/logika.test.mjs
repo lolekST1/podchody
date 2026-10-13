@@ -152,11 +152,12 @@ test('service worker zapisuje offline każdy plik aplikacji', () => {
   }
 });
 
-test('każda maskotka ma inny głos i nagrania wszystkich czytanych zdań', () => {
+test('każda maskotka ma inny głos, a lista nagrań obejmuje wszystkie czytane zdania', () => {
   const glosy = wszystkieGry.map((g) => g.motyw.maskotka?.glos);
   assert.ok(glosy.every(Boolean), 'każda gra ma "motyw.maskotka.glos"');
   assert.equal(new Set(glosy).size, glosy.length, 'głosy maskotek się nie powtarzają');
-  for (const g of wszystkieGry) {
+  // Gra bez listy nagrań (jeszcze nienagrana) mówi syntezą; lista jest tylko dla kompletu.
+  for (const g of wszystkieGry.filter((x) => existsSync(`app/nagrania/${x.id}.json`))) {
     const glos = g.motyw.maskotka.glos;
     const lista = JSON.parse(readFileSync(`app/nagrania/${g.id}.json`, 'utf8'));
     assert.equal(lista.glos, glos, `${g.id}: nagrania innym głosem — uruchom npm run nagrania`);
@@ -165,6 +166,7 @@ test('każda maskotka ma inny głos i nagrania wszystkich czytanych zdań', () =
     for (const p of potrzebne) assert.ok(existsSync(`app/nagrania/${g.id}/${p}.mp3`), `${g.id}: brak pliku ${p}.mp3`);
     assert.equal(readdirSync(`app/nagrania/${g.id}`).length, potrzebne.length, `${g.id}: nieużywane nagrania`);
   }
+  assert.ok(existsSync('app/nagrania/tygrysy-i-motory.json'), 'przykładowa gra (testy w przeglądarce) ma nagrania');
 });
 
 test('nazwa nagrania zależy od tekstu i głosu', () => {

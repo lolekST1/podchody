@@ -20,6 +20,8 @@ const NARAZ = 3;
 const KATALOG = new URL('../app/nagrania/', import.meta.url).pathname;
 
 const czekaj = (ms) => new Promise((ok) => setTimeout(ok, ms));
+class LimitDzienny extends Error {}
+let limit = null;
 
 async function nagraj(glos, tekst) {
   for (let proba = 1; ; proba++) {
@@ -41,6 +43,7 @@ async function nagraj(glos, tekst) {
     const blad = `${odp.status} ${dane.error?.message ?? 'brak dźwięku w odpowiedzi'}`.slice(0, 200);
     if (proba >= 6 || !(odp.ok || [400, 429, 500, 503].includes(odp.status))) throw new Error(blad);
     const pauza = Number(/"retryDelay":\s*"(\d+)s"/.exec(JSON.stringify(dane))?.[1] ?? 0) * 1000 || 2000 * 2 ** proba;
+    if (pauza > 5 * 60_000) throw new LimitDzienny(`limit dzienny Gemini — wznowienie za ${Math.ceil(pauza / 3_600_000)} h`);
     console.log(`  ponawiam za ${Math.round(pauza / 1000)} s (${blad})`);
     await czekaj(pauza);
   }
@@ -71,12 +74,13 @@ for (const gra of gry) {
 
   const kolejka = [...brakujace];
   await Promise.all(Array.from({ length: NARAZ }, async () => {
-    for (let z; (z = kolejka.shift());) {
+    for (let z; !limit && (z = kolejka.shift());) {
       const [plik, tekst] = z;
       try {
         await doMp3(await nagraj(glos, tekst), `${katalog}${plik}.mp3`);
         console.log(`  ✓ ${plik}  ${tekst}`);
       } catch (e) {
+        if (e instanceof LimitDzienny) { limit = e.message; break; }
         bledy += 1;
         console.log(`  ✗ ${plik}  ${tekst}\n    ${e.message}`);
       }
@@ -86,8 +90,18 @@ for (const gra of gry) {
   for (const f of readdirSync(katalog)) {
     if (!potrzebne.has(f.replace(/\.mp3$/, ''))) { unlinkSync(`${katalog}${f}`); console.log(`  usunięte: ${f}`); }
   }
-  const pliki = [...potrzebne.keys()].filter((p) => existsSync(`${katalog}${p}.mp3`)).sort();
-  writeFileSync(`${KATALOG}${gra.id}.json`, `${JSON.stringify({ glos, pliki }, null, 2)}\n`);
+  // Listę zapisujemy dopiero dla kompletu — inaczej maskotka mówiłaby na przemian
+  // swoim głosem i syntezą. Bez listy całą grę czyta synteza.
+  const komplet = [...potrzebne.keys()].every((p) => existsSync(`${katalog}${p}.mp3`));
+  const lista = `${KATALOG}${gra.id}.json`;
+  if (komplet) writeFileSync(lista, `${JSON.stringify({ glos, pliki: [...potrzebne.keys()].sort() }, null, 2)}\n`);
+  else if (existsSync(lista)) unlinkSync(lista);
+  if (limit) break;
+}
+
+if (limit) {
+  console.log(`\n${limit}. Uruchom skrypt ponownie później — dogra tylko brakujące zdania.`);
+  process.exit(2);
 }
 
 if (bledy) {
