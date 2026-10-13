@@ -14,7 +14,7 @@ Karty do druku wybiera się tak samo, polem „Gra” na stronie wydruku.
 
 | Gra | Dla kogo | Maskotka i droga postępu |
 |---|---|---|
-| 🐯 Tygrysy i motory | przykład, 3–12 lat | Tygrysek w goglach, motor na asfalcie |
+| 🐯 Tygrysy i motory Remka | Remek, 3 lata (najlepiej w trybie „Maluch”) | Tygrysek w goglach, motor na asfalcie |
 | ⚽ Piłkarski turniej Ignacego | Ignacy, 11 lat | Lisek Strzelec w koszulce z „10”, piłka toczy się po boisku |
 | 🐴 Stadnina Łucji | Łucja, 12 lat | Kucyk Iskierka, galop po leśnej ścieżce |
 | 🐼 Bambusowy las Zuzi | Zuzia, 7 lat | Panda Pyzia z bambusem, panda turla się po bambusowej ścieżce |

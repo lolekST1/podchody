@@ -1,7 +1,7 @@
 {
   "id": "tygrysy-i-motory",
-  "tytul": "Tygrysy i motory",
-  "opis": "6 stacji, dla dzieci 3–12 lat. Wersja do domu i do ogrodu.",
+  "tytul": "Tygrysy i motory Remka",
+  "opis": "6 kart, tygrysy i motory — dla Remka (3 lata). Dom i ogród.",
   "motyw": {
     "ikona": "🐯",
     "ikony": [
@@ -14,13 +14,13 @@
     ],
     "kolor": "#e8590c",
     "powitanie": {
-      "maluch": "Wrrrum! Tygrysy wsiadły na motory i schowały skarb! Pomożesz go znaleźć?",
-      "starszak": "Banda tygrysów na motorach ukryła skarb. Rozwiążcie 6 zagadek, a karty z kodami poprowadzą was do celu!"
+      "maluch": "Wrrrum! Remku, tygrysy wsiadły na motory i schowały skarb! Pomożesz go znaleźć?",
+      "starszak": "Remek ma urodziny, a banda tygrysów na motorach ukryła jego skarb! Pomóżcie mu: rozwiążcie 6 zagadek, a karty z kodami poprowadzą was do celu."
     },
     "skarb": {
       "ikona": "🎁",
-      "tytul": "Skarb jest wasz!",
-      "tekst": "Brawo, dzielne tygrysy! Rozwiązaliście wszystkie zagadki. Wszystkiego najlepszego!"
+      "tytul": "Remku, skarb jest twój!",
+      "tekst": "Brawo, dzielny tygrysku! Wszystkiego najlepszego, Remku — trzy razy wrrrum!"
     },
     "styl": "tygrysy",
     "maskotka": {
