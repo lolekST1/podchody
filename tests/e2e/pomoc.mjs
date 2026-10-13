@@ -19,7 +19,7 @@ export async function nagrywajMowe(page) {
       addEventListener: () => {},
     };
     Object.defineProperty(window, 'speechSynthesis', { value: synteza, configurable: true });
-    HTMLMediaElement.prototype.play = function play() {
+    HTMLAudioElement.prototype.play = function play() { // tylko dźwięk — wideo skanera ma grać naprawdę
       window.__nagrania.push(this.src);
       setTimeout(() => this.dispatchEvent(new Event('ended')), 10);
       return Promise.resolve();
