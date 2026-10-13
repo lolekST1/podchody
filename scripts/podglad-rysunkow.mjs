@@ -1,18 +1,19 @@
-// Podgląd maskotki (w każdym nastroju) i motorka w dużym powiększeniu — do poprawiania rysunków.
-// Użycie: node scripts/podglad-rysunkow.mjs <plik.png>
+// Podgląd maskotek (każdy gatunek w spoczynku i machający) i znaczników drogi w powiększeniu —
+// do poprawiania rysunków. Użycie: node scripts/podglad-rysunkow.mjs <plik.png>
 import { chromium } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { maskotkaSVG, GATUNKI } from '../app/js/maskotka.js';
+import { pojazdSVG, POJAZDY } from '../app/js/sceny.js';
+
 const css = readFileSync('app/css/styl.css', 'utf8');
-const { maskotkaSVG } = await import('../app/js/maskotka.js');
-const { motorekSVG } = await import('../app/js/sceny.js');
-const nastroje = ['', 'macha', 'cieszy', 'smutny'];
-const html = `<style>${css} body{background:#fff8e8} .rzad{display:flex;gap:20px;padding:20px;align-items:end}
-.maskotka{width:220px} .m{width:300px} *{animation-play-state:paused!important}</style>
-<div class="rzad">${nastroje.map((n) => `<div class="maskotka ${n}">${maskotkaSVG()}</div>`).join('')}</div>
-<div class="rzad"><div class="m">${motorekSVG()}</div><div class="m motorek jedzie" style="position:static;translate:none;width:300px">${motorekSVG()}</div></div>`;
+const html = `<style>${css} body{background:#fff8e8} .rzad{display:flex;gap:14px;padding:14px;align-items:end}
+.maskotka{width:180px} .m{width:200px} *{animation-play-state:paused!important}</style>
+<div class="rzad">${Object.keys(GATUNKI).map((g) => `<div class="maskotka">${maskotkaSVG({ gatunek: g })}</div>`).join('')}</div>
+<div class="rzad">${Object.keys(GATUNKI).map((g) => `<div class="maskotka cieszy">${maskotkaSVG({ gatunek: g })}</div>`).join('')}</div>
+<div class="rzad">${POJAZDY.map((p) => `<div class="m">${pojazdSVG(p)}</div>`).join('')}</div>`;
 const b = await chromium.launch();
-const p = await b.newPage({ viewport: { width: 1000, height: 560 } });
+const p = await b.newPage({ viewport: { width: 1000, height: 760 } });
 await p.setContent(html);
 await p.waitForTimeout(300);
-await p.screenshot({ path: process.argv[2] });
+await p.screenshot({ path: process.argv[2], fullPage: true });
 await b.close();

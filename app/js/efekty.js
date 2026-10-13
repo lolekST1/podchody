@@ -177,11 +177,19 @@ export function fontanna(el, o = {}) {
   })));
 }
 
-// Kłęby spalin za motorem na drodze postępu.
-export function spaliny(x, y) {
+// Ślad za znacznikiem na drodze postępu — każdy motyw zostawia coś innego.
+const SLADY = {
+  motor: { kolory: ['#adb5bd', '#ced4da', '#e9ecef'], ksztalt: 'kolo', grawitacja: -60 },
+  pilka: { kolory: ['#51cf66', '#2f9e44', '#8ce99a'], ksztalt: 'pasek', grawitacja: 200 },
+  kucyk: { kolory: ['#c69c6d', '#a0522d', '#e9d8c4'], ksztalt: 'kolo', grawitacja: -30 },
+  panda: { kolory: ['#69db7c', '#40c057', '#b2f2bb'], ksztalt: 'pasek', grawitacja: 120 },
+  jednorozec: { kolory: ['#ff6b6b', '#ffd43b', '#69db7c', '#4dabf7', '#cc5de8'], ksztalt: 'gwiazda', grawitacja: 40 },
+};
+export function spaliny(x, y, rodzaj = 'motor') {
+  const s = SLADY[rodzaj] ?? SLADY.motor;
   dodaj(Array.from({ length: 10 }, () => czastka(x, y, {
-    kierunek: Math.PI + los(-0.4, 0.4), vMin: 40, vMax: 140, grawitacja: -60, opor: 1.2,
-    zycieMin: 0.5, zycieMax: 0.9, ksztalt: 'kolo', kolory: ['#adb5bd', '#ced4da', '#e9ecef'], rMin: 4, rMax: 9,
+    kierunek: Math.PI + los(-0.5, 0.5), vMin: 40, vMax: 150, grawitacja: s.grawitacja, opor: 1.2,
+    zycieMin: 0.5, zycieMax: 0.9, ksztalt: s.ksztalt, kolory: s.kolory, rMin: 3, rMax: 8,
   })));
 }
 
@@ -247,6 +255,22 @@ const DZWIEKI = {
     const nuty = [[523, 0, 0.16], [523, 0.17, 0.16], [523, 0.34, 0.16], [659, 0.5, 0.5], [587, 1.0, 0.18], [659, 1.18, 0.18], [784, 1.36, 0.8]];
     nuty.forEach(([f, start, czas]) => { ton(ac, { f, start, czas, typ: 'square', glosnosc: 0.08, filtr: 2400 }); ton(ac, { f: f / 2, start, czas, glosnosc: 0.12 }); });
   },
+  // Gwizdek sędziego: wysoki ton z szybkim drżeniem
+  gwizdek: (ac) => {
+    const t = ac.currentTime;
+    const osc = ac.createOscillator(); const wzm = ac.createGain(); const lfo = ac.createOscillator(); const glebia = ac.createGain();
+    osc.type = 'sine'; osc.frequency.setValueAtTime(2300, t);
+    lfo.frequency.setValueAtTime(28, t); glebia.gain.setValueAtTime(120, t);
+    lfo.connect(glebia).connect(osc.frequency);
+    wzm.gain.setValueAtTime(0.0001, t); wzm.gain.exponentialRampToValueAtTime(0.12, t + 0.02);
+    wzm.gain.setValueAtTime(0.12, t + 0.5); wzm.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+    osc.connect(wzm).connect(ac.destination);
+    osc.start(t); lfo.start(t); osc.stop(t + 0.65); lfo.stop(t + 0.65);
+  },
+  // Patataj: stuk kopyt w rytmie galopu
+  patataj: (ac) => [0, 0.11, 0.22, 0.45, 0.56, 0.67].forEach((start, i) => ton(ac, { f: i % 3 === 2 ? 520 : 680, f2: 300, start, czas: 0.07, typ: 'triangle', glosnosc: 0.22 })),
+  boing: (ac) => ton(ac, { f: 180, f2: 620, czas: 0.32, typ: 'sine', glosnosc: 0.22 }),
+  magia: (ac) => [1047, 1319, 1568, 2093, 1568, 2637].forEach((f, i) => ton(ac, { f, start: i * 0.06, czas: 0.35, typ: 'sine', glosnosc: 0.1 })),
   skrzynia: (ac) => { ton(ac, { f: 180, f2: 90, czas: 0.25, typ: 'sawtooth', glosnosc: 0.1, filtr: 500 }); [784, 988, 1175, 1568].forEach((f, i) => ton(ac, { f, start: 0.2 + i * 0.07, czas: 0.3, typ: 'sine', glosnosc: 0.14 })); },
 };
 

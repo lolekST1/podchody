@@ -10,6 +10,8 @@ import {
 } from '../../app/js/logika.js';
 
 const gra = JSON.parse(readFileSync('app/gry/tygrysy-i-motory.json', 'utf8'));
+const wszystkieGry = JSON.parse(readFileSync('app/gry/index.json', 'utf8')).gry
+  .map((id) => JSON.parse(readFileSync(`app/gry/${id}.json`, 'utf8')));
 
 test('odpowiedź: wielkość liter i polskie znaki nie mają znaczenia', () => {
   assert.ok(czyPoprawna('TYGRYS', ['tygrys']));
@@ -36,9 +38,25 @@ test('odpowiedź: całe zdanie z poprawnym słowem przechodzi, pusta nie', () =>
   assert.ok(!czyPoprawna('', ['tygrys']));
 });
 
-test('przykładowa gra przechodzi walidację i ma 6 stacji', () => {
-  assert.deepEqual(sprawdzGre(gra), []);
-  assert.equal(gra.stacje.length, 6);
+test('każda gra z listy przechodzi walidację, ma 6 stacji i plik nazwany jak jej id', () => {
+  assert.ok(wszystkieGry.length >= 5);
+  for (const g of wszystkieGry) {
+    assert.deepEqual(sprawdzGre(g), [], g.id);
+    assert.equal(g.stacje.length, 6, g.id);
+  }
+  const ids = JSON.parse(readFileSync('app/gry/index.json', 'utf8')).gry;
+  assert.deepEqual(wszystkieGry.map((g) => g.id), ids);
+});
+
+test('walidacja odrzuca nieznany motyw, maskotkę i znacznik drogi', () => {
+  const zla = structuredClone(gra);
+  zla.motyw.styl = 'dinozaury';
+  zla.motyw.maskotka.gatunek = 'smok';
+  zla.motyw.pojazd = 'rakieta';
+  const bledy = sprawdzGre(zla).join('\n');
+  assert.match(bledy, /motyw.styl/);
+  assert.match(bledy, /motyw.maskotka.gatunek/);
+  assert.match(bledy, /motyw.pojazd/);
 });
 
 test('walidacja wyłapuje typowe błędy w pliku gry', () => {
@@ -56,8 +74,19 @@ test('walidacja wyłapuje typowe błędy w pliku gry', () => {
   assert.match(bledy, /stacja 6: starszak ma tę samą odpowiedź co maluch/, 'powtórka w trybie mieszanym');
 });
 
-test('poprawne odpowiedzi z pliku gry przechodzą przez sprawdzanie', () => {
-  for (const s of gra.stacje) for (const o of s.starszak.odpowiedzi) assert.ok(czyPoprawna(o, s.starszak.odpowiedzi), o);
+test('w każdej grze odpowiedzi wzorcowe przechodzą, a obrazek malucha nie jest odpowiedzią starszaka', () => {
+  for (const g of wszystkieGry) {
+    for (const s of g.stacje) {
+      for (const o of s.starszak.odpowiedzi) assert.ok(czyPoprawna(o, s.starszak.odpowiedzi), `${g.id}: ${o}`);
+      // Pozostałe (błędne) obrazki malucha też nie mogą przypadkiem zaliczyć zagadki starszaka.
+      for (const op of s.maluch.opcje) assert.ok(!czyPoprawna(op.nazwa, s.starszak.odpowiedzi), `${g.id} stacja ${s.nr}: ${op.nazwa}`);
+    }
+  }
+});
+
+test('tokeny kart są unikalne we wszystkich grach — karta jednej gry nie otworzy drugiej', () => {
+  const tokeny = wszystkieGry.flatMap((g) => g.stacje.map((s) => s.token));
+  assert.equal(new Set(tokeny).size, tokeny.length);
 });
 
 test('kolejność: tylko następna karta otwiera zagadkę', () => {

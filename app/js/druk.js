@@ -1,4 +1,6 @@
 import { sprawdzGre, adresKarty, WARIANTY } from './logika.js';
+import { maskotkaSVG } from './maskotka.js';
+import { pojazdSVG } from './sceny.js';
 
 const $gra = document.getElementById('gra');
 const $baza = document.getElementById('baza');
@@ -44,7 +46,10 @@ function rysuj() {
   const baza = $baza.value.trim();
   $ostrzezenie.hidden = !/^https?:\/\/(localhost|127\.|192\.168\.|10\.)/.test(baza);
   $ostrzezenie.textContent = 'Uwaga: adres gry to adres lokalny — telefony gości mogą go nie otworzyć. Do wydruku na imprezę użyj adresu opublikowanej gry.';
-  const ikony = (gra.motyw.ikonyDruk ?? []).map((src) => `<img src="${esc(src)}" alt="">`).join('');
+  // Na karcie maskotka gry i jej znacznik z drogi postępu — dzieci rozpoznają je potem w telefonie.
+  const ikony = gra.motyw.maskotka
+    ? `<span class="ikona-druk">${maskotkaSVG({ gatunek: gra.motyw.maskotka.gatunek })}</span><span class="ikona-druk">${pojazdSVG(gra.motyw.pojazd)}</span>`
+    : (gra.motyw.ikonyDruk ?? []).map((src) => `<img src="${esc(src)}" alt="">`).join('');
   const n = gra.stacje.length;
 
   const karty = gra.stacje.map((s) => `

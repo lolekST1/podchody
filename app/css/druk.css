@@ -26,6 +26,8 @@ body { margin: 0; background: #e9ecef; color: #111; font-family: system-ui, -app
 .karta.ogrod { border-width: 4mm; border-style: solid; outline: 1.5mm dashed #111; outline-offset: -8mm; }
 .karta .gora { display: flex; align-items: center; justify-content: center; gap: 6mm; width: 100%; }
 .karta .gora img { width: 30mm; height: 30mm; }
+.karta .gora .ikona-druk { width: 34mm; height: 34mm; display: grid; place-items: end center; }
+.karta .gora .ikona-druk svg { width: 100%; height: 100%; overflow: visible; }
 .karta .numer-blok { text-align: center; line-height: 1; }
 .karta .slowo-karta { font-size: 11mm; font-weight: 800; letter-spacing: 1mm; text-transform: uppercase; }
 .karta .numer { font-size: 62mm; font-weight: 900; line-height: .9; }
@@ -54,3 +56,7 @@ body { margin: 0; background: #e9ecef; color: #111; font-family: system-ui, -app
   /* Podgląd na telefonie: zmniejszona kartka zamiast poziomego przewijania */
   #karty { zoom: .42; }
 }
+
+/* Na wydruku maskotka stoi spokojnie: bez uniesionej łapki i bez otwartego pyszczka
+   (te części pokazuje dopiero animacja w grze). */
+.ikona-druk .mk-reka-gora, .ikona-druk .mk-oczy-radosne, .ikona-druk .mk-usta-otwarte { display: none; }

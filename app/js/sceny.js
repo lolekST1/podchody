@@ -79,3 +79,78 @@ export function motorekSVG() {
   </g>
 </svg>`;
 }
+
+// ---------- Znaczniki postępu na drodze (po jednym na motyw) ----------
+// Wspólny układ: viewBox 0 -10 120 90, „ziemia” na y≈78; koła (mt-kolo) i toczące się kule (mt-toczy) kręcą się w czasie jazdy.
+
+function pilkaSVG() {
+  return `<svg viewBox="0 -10 120 90" aria-hidden="true">
+  <ellipse cx="60" cy="79" rx="22" ry="4" fill="#000" opacity=".18"/>
+  <g class="mt-toczy">
+    <circle cx="60" cy="52" r="26" fill="#fff" stroke="#212529" stroke-width="4"/>
+    <path d="M60 41 l10 7 -4 12 h-12 l-4 -12 z" fill="#212529"/>
+    <path d="M60 41 v-15 M70 48 l14 -5 M66 60 l9 12 M54 60 l-9 12 M50 48 l-14 -5" stroke="#212529" stroke-width="3"/>
+    <path d="M45 30 l-8 6 2 8 M75 30 l8 6 -2 8 M86 58 l-6 8 M34 58 l6 8 M52 77 l8 -3 8 3" fill="none" stroke="#212529" stroke-width="3"/>
+  </g>
+</svg>`;
+}
+
+function pandaKulkaSVG() {
+  return `<svg viewBox="0 -10 120 90" aria-hidden="true">
+  <ellipse cx="60" cy="79" rx="22" ry="4" fill="#000" opacity=".18"/>
+  <g class="mt-toczy">
+    <circle cx="42" cy="32" r="8" fill="#212529"/><circle cx="78" cy="32" r="8" fill="#212529"/>
+    <circle cx="60" cy="52" r="26" fill="#fff" stroke="#212529" stroke-width="4"/>
+    <ellipse cx="50" cy="48" rx="7" ry="9" transform="rotate(-25 50 48)" fill="#212529"/>
+    <ellipse cx="70" cy="48" rx="7" ry="9" transform="rotate(25 70 48)" fill="#212529"/>
+    <circle cx="51" cy="47" r="2.8" fill="#fff"/><circle cx="69" cy="47" r="2.8" fill="#fff"/>
+    <ellipse cx="60" cy="57" rx="4" ry="3" fill="#212529"/>
+    <path d="M55 62 q5 4 10 0" stroke="#212529" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="36" cy="64" rx="7" ry="10" transform="rotate(30 36 64)" fill="#212529"/>
+    <ellipse cx="84" cy="64" rx="7" ry="10" transform="rotate(-30 84 64)" fill="#212529"/>
+    <circle cx="44" cy="58" r="4" fill="#ff8787" opacity=".5"/><circle cx="76" cy="58" r="4" fill="#ff8787" opacity=".5"/>
+  </g>
+</svg>`;
+}
+
+// Kucyk z boku; jednorożec to ten sam rysunek z rogiem, tęczową grzywą i skrzydełkiem.
+function kucykSVG({ jednorozec = false } = {}) {
+  const futro = jednorozec ? '#fdf4ff' : '#b5652e';
+  const kopyto = jednorozec ? '#cc5de8' : '#4a2511';
+  const grzywa = jednorozec ? ['#ff6b6b', '#ffd43b', '#69db7c', '#4dabf7', '#9775fa'] : ['#4a2511', '#6b3a1c', '#4a2511'];
+  const pasmo = (d, i) => `<path d="${d}" fill="none" stroke="#212529" stroke-width="7" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${grzywa[i % grzywa.length]}" stroke-width="4" stroke-linecap="round"/>`;
+  const noga = (x, kl) => `<g class="kn-noga ${kl}"><path d="M${x} 48 V72" stroke="#212529" stroke-width="9" stroke-linecap="round"/><path d="M${x} 48 V72" stroke="${futro}" stroke-width="5" stroke-linecap="round"/><rect x="${x - 4.5}" y="70" width="9" height="6" rx="2" fill="${kopyto}" stroke="#212529" stroke-width="2"/></g>`;
+  return `<svg viewBox="0 -10 120 90" aria-hidden="true">
+  <ellipse cx="58" cy="79" rx="30" ry="4" fill="#000" opacity=".15"/>
+  <g class="kn-cialo">
+    ${[0, 1, 2].map((i) => pasmo(`M32 ${36 + i * 3} C${20 - i * 3} ${40 + i * 4} ${18 - i * 2} ${56 + i * 3} ${12 + i * 3} ${62 + i * 2}`, i)).join('')}
+    ${noga(38, 'kn-b')}${noga(76, 'kn-b')}
+    <ellipse cx="56" cy="40" rx="27" ry="15" fill="${futro}" stroke="#212529" stroke-width="3"/>
+    ${noga(46, 'kn-a')}${noga(70, 'kn-a')}
+    ${jednorozec ? '<path d="M46 34 q8 -20 24 -16 q-6 8 -8 18 q-8 -6 -16 -2z" fill="#fff" stroke="#212529" stroke-width="2.5" stroke-linejoin="round"/><path d="M52 30 q6 -6 12 -6" stroke="#cc5de8" stroke-width="2" fill="none"/>' : ''}
+    <path d="M72 32 L84 10" stroke="#212529" stroke-width="17" stroke-linecap="round"/>
+    <path d="M72 32 L84 10" stroke="${futro}" stroke-width="12" stroke-linecap="round"/>
+    <g class="kn-glowa">
+      ${jednorozec ? '<path d="M88 -2 L98 -20 L94 0 Z" fill="#fcc419" stroke="#212529" stroke-width="2.5" stroke-linejoin="round"/>' : ''}
+      <path d="M80 2 L80 -10 L88 -1 Z" fill="${futro}" stroke="#212529" stroke-width="2.5" stroke-linejoin="round"/>
+      <ellipse cx="92" cy="8" rx="15" ry="9" transform="rotate(22 92 8)" fill="${futro}" stroke="#212529" stroke-width="3"/>
+      <ellipse cx="102" cy="14" rx="6" ry="5" transform="rotate(22 102 14)" fill="${jednorozec ? '#fcc2d7' : '#f6dcc0'}"/>
+      <circle cx="104" cy="13" r="1.4" fill="#212529"/>
+      <circle cx="89" cy="4" r="2.6" fill="#212529"/><circle cx="90" cy="3" r="1" fill="#fff"/>
+      ${pasmo('M80 -2 Q72 8 74 20', 0)}${pasmo('M82 2 Q74 14 74 26', 1)}${grzywa.length > 3 ? pasmo('M84 6 Q78 18 78 30', 2) : ''}
+    </g>
+  </g>
+</svg>`;
+}
+
+export const POJAZDY = ['motor', 'pilka', 'kucyk', 'panda', 'jednorozec'];
+
+export function pojazdSVG(rodzaj = 'motor') {
+  switch (rodzaj) {
+    case 'pilka': return pilkaSVG();
+    case 'kucyk': return kucykSVG();
+    case 'jednorozec': return kucykSVG({ jednorozec: true });
+    case 'panda': return pandaKulkaSVG();
+    default: return motorekSVG();
+  }
+}

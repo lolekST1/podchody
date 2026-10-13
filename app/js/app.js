@@ -6,7 +6,7 @@ import {
 import { mow, przerwijMowe, mowaDostepna } from './mowa.js';
 import { otworzSkaner } from './skaner.js';
 import { maskotkaSVG, nastroj } from './maskotka.js';
-import { skrzyniaSVG, motorekSVG } from './sceny.js';
+import { skrzyniaSVG, pojazdSVG } from './sceny.js';
 import { wybuch, deszcz, fontanna, spaliny, dzwiek, wibruj, czyCisza, przelaczCisze } from './efekty.js';
 
 const $ekran = document.getElementById('ekran');
@@ -56,7 +56,15 @@ const czytaTryb = (czesc) => stan && potrzebneCzesci(stan.tryb).includes(czesc);
 const adresBazowy = () => new URL('./', location.href).href;
 // Kolejne elementy ekranu wjeżdżają po sobie — --d to opóźnienie w krokach.
 const wej = (d) => `style="--d:${d}"`;
-const maskotka = (klasa = '', etykieta) => `<div class="maskotka ${klasa}" aria-hidden="${etykieta ? 'false' : 'true'}">${maskotkaSVG({ etykieta })}</div>`;
+// Motyw gry: maskotka, znacznik na drodze, okrzyk i dźwięk ruchu (domyślnie tygrysy — pierwsza gra).
+const motyw = () => ({
+  gatunek: gra.motyw.maskotka?.gatunek ?? 'tygrys',
+  imie: gra.motyw.maskotka?.imie ?? 'Tygrysek',
+  pojazd: gra.motyw.pojazd ?? 'motor',
+  okrzyk: gra.motyw.okrzyk ?? 'Hurra! Jedziemy dalej!',
+  dzwiekRuchu: gra.motyw.dzwiekRuchu ?? 'wrrum',
+});
+const maskotka = (klasa = '', etykieta) => `<div class="maskotka ${klasa}" aria-hidden="${etykieta ? 'false' : 'true'}">${maskotkaSVG({ gatunek: motyw().gatunek, etykieta })}</div>`;
 
 function naglowek() {
   const n = liczbaStacji();
@@ -67,11 +75,11 @@ function naglowek() {
       <div class="droga-asfalt"><div class="droga-pasy"></div></div>
       ${gra.stacje.map((s) => `<span class="flaga ${s.nr <= zrobione ? 'zdobyta' : ''} ${s.nr === zrobione + 1 ? 'nastepna' : ''}" style="--i:${s.nr}">${s.nr}</span>`).join('')}
       <span class="meta" aria-hidden="true">🎁</span>
-      <div class="motorek" style="--p:${postepNaDrodze ?? pozycja}">${motorekSVG()}</div>
+      <div class="motorek" style="--p:${postepNaDrodze ?? pozycja}">${pojazdSVG(motyw().pojazd)}</div>
     </div>`;
   return `<header class="naglowek" ${wej(0)}>
     <div class="naglowek-gora">
-      <span class="tytul-gry"><span class="ikony" aria-hidden="true">${(gra.motyw.ikony ?? [gra.motyw.ikona]).join('')}</span>${esc(gra.tytul)}</span>
+      <span class="tytul-gry"><span class="ikony" aria-hidden="true">${esc(gra.motyw.ikona)}</span><span class="nazwa">${esc(gra.tytul)}</span></span>
       ${stan ? `<span class="postep" aria-label="Zaliczone karty">${zrobione} / ${n} ✅</span>` : ''}
       <button class="cisza" type="button" data-cisza aria-label="${czyCisza() ? 'Włącz dźwięki' : 'Wycisz dźwięki'}">${czyCisza() ? '🔇' : '🔊'}</button>
     </div>
@@ -94,8 +102,8 @@ function podepnijNaglowek() {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       $motor.classList.add('jedzie');
       $motor.style.setProperty('--p', cel);
-      dzwiek('wrrum');
-      const kurz = setInterval(() => { const q = $motor.getBoundingClientRect(); spaliny(q.left + 4, q.bottom - 10); }, 160);
+      dzwiek(motyw().dzwiekRuchu);
+      const kurz = setInterval(() => { const q = $motor.getBoundingClientRect(); spaliny(q.left + 4, q.bottom - 10, motyw().pojazd); }, 160);
       setTimeout(() => { clearInterval(kurz); $motor.classList.remove('jedzie'); }, 1500);
     }));
   }
@@ -161,7 +169,9 @@ async function ustawGre(id) {
   if (gra?.id !== id) gra = await wczytajGre(id);
   stan = czytaj(kluczStanu(gra.id));
   zapisz(KLUCZ_GRY, gra.id);
-  document.documentElement.style.setProperty('--motyw', gra.motyw.kolor ?? '#e8590c');
+  // Paleta, tło i wygląd drogi zależą od stylu gry (css: [data-styl]).
+  document.body.dataset.styl = gra.motyw.styl ?? 'tygrysy';
+  document.querySelector('meta[name=theme-color]')?.setAttribute('content', gra.motyw.kolor ?? '#c2410c');
 }
 
 async function obsluzSkan(dane) {
@@ -186,7 +196,7 @@ function ekranGlowny() {
 }
 
 // ---------- Konfiguracja (rodzic, przed grą) ----------
-async function ekranKonfiguracji() {
+async function ekranKonfiguracji(poprzedni = {}) {
   let gry = [gra.id];
   try { gry = await listaGier(); } catch { /* offline bez listy — zostaje bieżąca gra */ }
   const tytuly = {};
@@ -199,7 +209,7 @@ async function ekranKonfiguracji() {
 
   pokaz(`
     <section class="powitanie-gry" ${wej(0)}>
-      ${maskotka('macha', 'Tygrysek macha na powitanie')}
+      ${maskotka('macha', `${motyw().imie} macha na powitanie`)}
       <div>
         <p class="nadtytul">Gra terenowa</p>
         <p class="logo">Podchody</p>
@@ -240,20 +250,28 @@ async function ekranKonfiguracji() {
     $ekran.querySelectorAll(`[data-${atr}]`).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset[atr] === wartosc)));
     dzwiek('klik');
   };
+  // Wybór gry od razu przebiera ekran w jej motyw — rodzic widzi, co zobaczą dzieci.
   na('[data-gra]', async (e) => {
-    wybor.gra = e.currentTarget.dataset.gra;
-    zaznacz('gra', wybor.gra);
-    document.getElementById('link-druk').href = `druk.html?g=${encodeURIComponent(wybor.gra)}`;
+    const id = e.currentTarget.dataset.gra;
+    if (id === gra.id) return;
+    dzwiek('klik');
+    await ustawGre(id);
+    ekranKonfiguracji({ tryb: wybor.tryb, wariant: wybor.wariant, pin: $pin.value });
   });
   na('[data-tryb]', (e) => { wybor.tryb = e.currentTarget.dataset.tryb; zaznacz('tryb', wybor.tryb); odswiez(); });
   na('[data-wariant]', (e) => { wybor.wariant = e.currentTarget.dataset.wariant; zaznacz('wariant', wybor.wariant); odswiez(); });
   $pin.addEventListener('input', () => { $pin.value = $pin.value.replace(/\D/g, '').slice(0, 4); odswiez(); });
+  // Po zmianie gry wybory rodzica zostają — przebiera się tylko motyw.
+  if (poprzedni.tryb) { wybor.tryb = poprzedni.tryb; $ekran.querySelector(`[data-tryb="${poprzedni.tryb}"]`)?.setAttribute('aria-pressed', 'true'); }
+  if (poprzedni.wariant) { wybor.wariant = poprzedni.wariant; $ekran.querySelector(`[data-wariant="${poprzedni.wariant}"]`)?.setAttribute('aria-pressed', 'true'); }
+  if (poprzedni.pin) $pin.value = poprzedni.pin;
+  odswiez();
   $start.addEventListener('click', async () => {
     if (wybor.gra !== gra.id) await ustawGre(wybor.gra);
     stan = nowyStan({ tryb: wybor.tryb, wariant: wybor.wariant, pin: $pin.value });
     zapiszStan();
     postepNaDrodze = 0;
-    dzwiek('wrrum');
+    dzwiek(motyw().dzwiekRuchu);
     ekranSzukania({ powitanie: true });
   });
 }
@@ -271,7 +289,7 @@ function ekranSzukania({ brawo = false, pominieta = false, powitanie = false } =
   ].filter(Boolean).join(' ');
   const dymek = powitanie
     ? (starszak ? gra.motyw.powitanie?.starszak : gra.motyw.powitanie?.maluch)
-    : brawo ? 'Hurra! Jedziemy dalej! Wrrrum!' : `Gdzie się schowała karta nr ${nr}?`;
+    : brawo ? motyw().okrzyk : `Gdzie się schowała karta nr ${nr}?`;
 
   pokaz(`
     ${naglowek()}

@@ -37,7 +37,7 @@ for (const wariant of ['dom', 'ogrod']) {
     for (const s of gra.stacje) {
       const karta = page.locator(`[data-karta="${s.nr}"]`);
       await expect(karta.locator('.numer')).toHaveText(String(s.nr));
-      await expect(karta.locator('.gora img')).toHaveCount(2);
+      await expect(karta.locator('.gora > img, .gora > .ikona-druk')).toHaveCount(2);
     }
     const kody = await odczytajKody(page);
     expect(kody).toHaveLength(6);
@@ -60,3 +60,22 @@ test('wydruk bez ściągawki ma tylko karty', async ({ page }) => {
   await expect(page.locator('[data-sciagawka]')).toHaveCount(0);
   await expect(page.locator('[data-karta]')).toHaveCount(6);
 });
+
+// Wydruk każdej gry: 6 kart z maskotką i znacznikiem motywu, kody prowadzą do kart właściwej gry.
+const wszystkie = JSON.parse(readFileSync('app/gry/index.json', 'utf8')).gry
+  .map((id) => JSON.parse(readFileSync(`app/gry/${id}.json`, 'utf8')));
+for (const g of wszystkie) {
+  test(`wydruk gry ${g.id}: karty z motywem i działające kody`, async ({ page }) => {
+    await page.setViewportSize({ width: 1000, height: 1400 });
+    await page.goto(`./druk.html?g=${g.id}`);
+    await expect(page.locator('body[data-gotowe]')).toBeAttached();
+    await expect(page.locator('[data-karta]')).toHaveCount(6);
+    await expect(page.locator('[data-karta="1"] .gora > .ikona-druk, [data-karta="1"] .gora > img')).toHaveCount(2);
+    const kody = await odczytajKody(page);
+    kody.forEach((k, i) => {
+      expect(k.odczytany).toBe(k.oczekiwany);
+      expect(k.odczytany).toContain(`?g=${g.id}&s=${i + 1}&t=${g.stacje[i].token}`);
+    });
+    await page.locator('[data-karta="1"]').screenshot({ path: `raport/druk-${g.id}-karta1.png` });
+  });
+}

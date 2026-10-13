@@ -7,13 +7,32 @@ Na końcu jest ekran skarbu.
 **Gra:** https://lolekst1.github.io/podchody/
 **Karty do druku:** https://lolekst1.github.io/podchody/druk.html
 
+## Gry w zestawie
+
+Wybór gry jest na ekranie „Przygotuj grę”: ekran od razu przebiera się w jej kolory i maskotkę.
+Karty do druku wybiera się tak samo, polem „Gra” na stronie wydruku.
+
+| Gra | Dla kogo | Maskotka i droga postępu |
+|---|---|---|
+| 🐯 Tygrysy i motory | przykład, 3–12 lat | Tygrysek w goglach, motor na asfalcie |
+| ⚽ Piłkarski turniej Ignacego | Ignacy, 11 lat | Lisek Strzelec w koszulce z „10”, piłka toczy się po boisku |
+| 🐴 Stadnina Łucji | Łucja, 12 lat | Kucyk Iskierka, galop po leśnej ścieżce |
+| 🐼 Bambusowy las Zuzi | Zuzia, 7 lat | Panda Pyzia z bambusem, panda turla się po bambusowej ścieżce |
+| 🦄 Tęczowa kraina Róży | Róża, 10 lat | Jednorożka Gwiazdka, lot po tęczy |
+
+Zagadki starszaka są dopasowane do wieku solenizanta: dla Zuzi krótkie i proste, dla Róży szyfry
+i słowa czytane od tyłu, dla Ignacego i Łucji wiedza o piłce i koniach. Wersja malucha zostaje
+w każdej grze dla młodszych gości. Każda gra ma wersję domową i ogrodową; ściągawka do druku
+podaje kryjówki i odpowiedzi.
+
 ## Co zobaczą dzieci
 
-Tygrysek w goglach motocyklowych prowadzi przez grę: macha na powitanie, rusza pyszczkiem,
+Maskotka gry (np. Tygrysek w goglach motocyklowych) prowadzi przez grę: macha na powitanie, rusza pyszczkiem,
 kiedy telefon czyta zagadkę, skacze z radości po dobrej odpowiedzi i przechyla głowę po złej.
-U góry ekranu motor z tygryskiem jedzie po drodze do kolejnej flagi po każdej zaliczonej karcie.
+U góry ekranu znacznik motywu (motor, piłka, kucyk, panda, jednorożec) przesuwa się po drodze
+do kolejnej flagi po każdej zaliczonej karcie.
 Na końcu dzieci otwierają dotykiem skrzynię skarbu i lecą z niej monety, gwiazdy i konfetti.
-Dźwięki (warkot motoru, fanfara) i wibracje są generowane w telefonie, bez pobierania plików.
+Dźwięki (warkot motoru, gwizdek sędziego, stukot kopyt, „boing”, czarodziejskie dzwonki, fanfara) i wibracje są generowane w telefonie, bez pobierania plików.
 Przycisk 🔊 w rogu je wycisza. Przy włączonym w systemie „ograniczeniu ruchu” animacje się wyłączają.
 
 ## Tryby
@@ -71,6 +90,11 @@ Każda gra to jeden plik JSON w `app/gry/`. Najprościej poprosić Claude. Skopi
 > i wypchnij zmiany na `main`.
 
 Po wdrożeniu (około 3 minut) nowa gra pojawi się na ekranie „Przygotuj grę” i na stronie z kartami.
+
+Motyw wybiera się w `motyw`: `styl` (tygrysy, pilka, konie, pandy, jednorozce), `maskotka.gatunek`
+(tygrys, lis, kon, panda, jednorozec), `pojazd` (motor, pilka, kucyk, panda, jednorozec), `dzwiekRuchu`
+(wrrum, gwizdek, patataj, boing, magia) i `okrzyk`. Zupełnie nowy motyw, np. dinozaury, wymaga
+nowej maskotki i kolorów w kodzie: poproś o to Claude tym samym poleceniem.
 
 Najważniejsze pola pliku gry:
 - `stacje[].maluch`: `zagadka` (czytana na głos), `opcje` (3–4 obrazki: `obrazek` + `nazwa`), `poprawna` (numer obrazka, **liczony od 0**),

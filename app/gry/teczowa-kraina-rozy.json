@@ -1,0 +1,309 @@
+{
+  "id": "teczowa-kraina-rozy",
+  "tytul": "Tęczowa kraina Róży",
+  "opis": "6 kart, jednorożce — dla Róży (10 lat). Dom i ogród.",
+  "motyw": {
+    "ikona": "🦄",
+    "ikony": [
+      "🦄",
+      "🌈"
+    ],
+    "kolor": "#9c36b5",
+    "styl": "jednorozce",
+    "maskotka": {
+      "gatunek": "jednorozec",
+      "imie": "Jednorożka Gwiazdka"
+    },
+    "pojazd": "jednorozec",
+    "dzwiekRuchu": "magia",
+    "okrzyk": "Hurra! Lecimy dalej po tęczy!",
+    "powitanie": {
+      "maluch": "Cześć! Jestem Jednorożka Gwiazdka. Ktoś schował mój czarodziejski skarb. Pomożesz go znaleźć?",
+      "starszak": "Różo, w Tęczowej Krainie zniknął czarodziejski skarb! Rozwiążcie 6 magicznych zagadek, a tęcza zaprowadzi was do celu."
+    },
+    "skarb": {
+      "ikona": "🎁",
+      "tytul": "Magiczny skarb jest wasz!",
+      "tekst": "Brawo, czarodzieje! Wszystkiego najlepszego, Różo — niech każdy dzień będzie kolorowy jak tęcza!"
+    }
+  },
+  "start": {
+    "dom": {
+      "schowek": "pod poduszką na kanapie",
+      "obrazek": "🛋️",
+      "maluch": "Pierwsza karta schowała się pod poduszką na kanapie. Poszukaj tam!",
+      "starszak": "Pierwsza karta drzemie na miękkiej „chmurce” — tam, gdzie siadacie, żeby odpocząć. Zajrzyjcie pod poduszkę."
+    },
+    "ogrod": {
+      "schowek": "pod wycieraczką przy drzwiach wejściowych",
+      "obrazek": "🚪",
+      "maluch": "Pierwsza karta schowała się przy drzwiach, pod wycieraczką. Poszukaj tam!",
+      "starszak": "Pierwsza karta czeka przy bramie do Tęczowej Krainy — pod wycieraczką przy drzwiach."
+    }
+  },
+  "stacje": [
+    {
+      "nr": 1,
+      "token": "obhu9f",
+      "maluch": {
+        "zagadka": "Pokaż jednorożca! To konik z rogiem na głowie.",
+        "opcje": [
+          {
+            "obrazek": "🐴",
+            "nazwa": "konik"
+          },
+          {
+            "obrazek": "🦄",
+            "nazwa": "jednorożec"
+          },
+          {
+            "obrazek": "🐮",
+            "nazwa": "krowa"
+          }
+        ],
+        "poprawna": 1
+      },
+      "starszak": {
+        "zagadka": "Ile kolorów ma tęcza? Wpiszcie liczbę.",
+        "odpowiedzi": [
+          "7",
+          "siedem"
+        ]
+      },
+      "wskazowka": {
+        "dom": {
+          "schowek": "w łazience, przy wannie",
+          "obrazek": "🛁",
+          "maluch": "Brawo! Następna karta jest w łazience, przy wannie.",
+          "starszak": "Jednorożce kąpią się w tęczowej pianie. Szukajcie tam, gdzie wy robicie pianę."
+        },
+        "ogrod": {
+          "schowek": "przy największym drzewie",
+          "obrazek": "🌳",
+          "maluch": "Brawo! Następna karta jest przy dużym drzewie.",
+          "starszak": "Tęcza zaczyna się przy najwyższej roślinie w ogrodzie — tej z pniem i gałęziami."
+        }
+      }
+    },
+    {
+      "nr": 2,
+      "token": "r2yx82",
+      "maluch": {
+        "zagadka": "Co świeci nocą na niebie? Pokaż gwiazdkę!",
+        "opcje": [
+          {
+            "obrazek": "🍌",
+            "nazwa": "banan"
+          },
+          {
+            "obrazek": "⭐",
+            "nazwa": "gwiazdka"
+          },
+          {
+            "obrazek": "🧦",
+            "nazwa": "skarpetka"
+          }
+        ],
+        "poprawna": 1
+      },
+      "starszak": {
+        "zagadka": "Jaki kolor jest zawsze na samej górze łuku tęczy?",
+        "odpowiedzi": [
+          "czerwony",
+          "czerwień",
+          "czerwona"
+        ]
+      },
+      "wskazowka": {
+        "dom": {
+          "schowek": "w koszu na pranie",
+          "obrazek": "🧺",
+          "maluch": "Super! Następna karta jest w koszu na pranie.",
+          "starszak": "Nawet magiczne skarpetki trzeba czasem uprać. Następna karta czeka przy brudnych ubraniach."
+        },
+        "ogrod": {
+          "schowek": "przy kwiatkach na grządce",
+          "obrazek": "🌷",
+          "maluch": "Super! Następna karta jest przy kwiatkach.",
+          "starszak": "Szukajcie tam, gdzie jest najbardziej kolorowo: przy kwiatkach."
+        }
+      }
+    },
+    {
+      "nr": 3,
+      "token": "kpwwiu",
+      "maluch": {
+        "zagadka": "Co pojawia się na niebie, gdy po deszczu wyjdzie słońce? Pokaż tęczę!",
+        "opcje": [
+          {
+            "obrazek": "🌈",
+            "nazwa": "tęcza"
+          },
+          {
+            "obrazek": "⛄",
+            "nazwa": "bałwan"
+          },
+          {
+            "obrazek": "🔥",
+            "nazwa": "ogień"
+          }
+        ],
+        "poprawna": 0
+      },
+      "starszak": {
+        "zagadka": "Magiczne słowo zapisane od tyłu: AIGAM. Przeczytajcie je normalnie.",
+        "odpowiedzi": [
+          "magia",
+          "magię",
+          "magii"
+        ]
+      },
+      "wskazowka": {
+        "dom": {
+          "schowek": "w kuchni, przy misce z owocami",
+          "obrazek": "🍎",
+          "maluch": "Hurra! Następna karta jest w kuchni, przy owocach.",
+          "starszak": "Jednorożce uwielbiają słodkie owoce. Szukajcie w kuchni, przy jabłkach i bananach."
+        },
+        "ogrod": {
+          "schowek": "przy wiaderku lub konewce",
+          "obrazek": "🪣",
+          "maluch": "Hurra! Następna karta jest przy wiaderku.",
+          "starszak": "Bez deszczu nie ma tęczy! Następna karta jest przy konewce albo wiaderku."
+        }
+      }
+    },
+    {
+      "nr": 4,
+      "token": "v0avmf",
+      "maluch": {
+        "zagadka": "Ile jednorożców widzisz? Pokaż trzy!",
+        "opcje": [
+          {
+            "obrazek": "🦄",
+            "nazwa": "jeden jednorożec"
+          },
+          {
+            "obrazek": "🦄🦄🦄",
+            "nazwa": "trzy jednorożce"
+          },
+          {
+            "obrazek": "🦄🦄",
+            "nazwa": "dwa jednorożce"
+          }
+        ],
+        "poprawna": 1
+      },
+      "starszak": {
+        "zagadka": "Jestem biała i zimna, spadam z nieba zimą, a każda z nas ma sześć ramion. Czym jestem?",
+        "odpowiedzi": [
+          "śnieżynka",
+          "płatek śniegu",
+          "płatkiem śniegu",
+          "śnieżynką"
+        ]
+      },
+      "wskazowka": {
+        "dom": {
+          "schowek": "w przedpokoju, w bucie",
+          "obrazek": "👟",
+          "maluch": "Wspaniale! Następna karta schowała się w bucie, w przedpokoju.",
+          "starszak": "Następna karta schowała się w czymś, co ma język, ale nie mówi — w bucie przy drzwiach."
+        },
+        "ogrod": {
+          "schowek": "pod ławką lub krzesłem ogrodowym",
+          "obrazek": "🪑",
+          "maluch": "Wspaniale! Następna karta jest pod ławką.",
+          "starszak": "Jednorożec przysiadł, żeby odpocząć — pod ławką w ogrodzie."
+        }
+      }
+    },
+    {
+      "nr": 5,
+      "token": "y7xbe0",
+      "maluch": {
+        "zagadka": "Jednorożec jest głodny. Pokaż babeczkę!",
+        "opcje": [
+          {
+            "obrazek": "🔧",
+            "nazwa": "klucz"
+          },
+          {
+            "obrazek": "🪨",
+            "nazwa": "kamień"
+          },
+          {
+            "obrazek": "🧁",
+            "nazwa": "babeczka"
+          }
+        ],
+        "poprawna": 2
+      },
+      "starszak": {
+        "zagadka": "Szyfr jednorożca: A=1, B=2, C=3… (alfabet bez polskich liter). Odczytajcie słowo 18 – 15 – 7. To coś, co jednorożec ma na czole.",
+        "odpowiedzi": [
+          "róg",
+          "rogiem",
+          "rogu"
+        ]
+      },
+      "wskazowka": {
+        "dom": {
+          "schowek": "w sypialni, pod kołdrą",
+          "obrazek": "🛏️",
+          "maluch": "Jeszcze tylko jedna! Następna karta jest w łóżku, pod kołdrą.",
+          "starszak": "Ostatnia karta śni kolorowe sny pod kołdrą w sypialni."
+        },
+        "ogrod": {
+          "schowek": "przy dużym kamieniu",
+          "obrazek": "🪨",
+          "maluch": "Jeszcze tylko jedna! Następna karta jest przy dużym kamieniu.",
+          "starszak": "Ostatnia karta leży przy kamieniu, który mógłby być zaczarowanym kryształem."
+        }
+      }
+    },
+    {
+      "nr": 6,
+      "token": "e79nvj",
+      "maluch": {
+        "zagadka": "Jednorożka Gwiazdka ma urodziny! Pokaż tort!",
+        "opcje": [
+          {
+            "obrazek": "🥦",
+            "nazwa": "brokuł"
+          },
+          {
+            "obrazek": "🎂",
+            "nazwa": "tort"
+          },
+          {
+            "obrazek": "👟",
+            "nazwa": "but"
+          }
+        ],
+        "poprawna": 1
+      },
+      "starszak": {
+        "zagadka": "Ostatnia zagadka! Róża ma dziś 10 lat. Za ile lat skończy 18? Wpiszcie liczbę.",
+        "odpowiedzi": [
+          "8",
+          "osiem"
+        ]
+      },
+      "wskazowka": {
+        "dom": {
+          "schowek": "SKARB: w szafie w pokoju urodzinowym",
+          "obrazek": "🎁",
+          "maluch": "Brawo! Skarb jest schowany w szafie. Biegnij!",
+          "starszak": "Magiczny skarb czeka za drzwiczkami, za którymi wiszą ubrania!"
+        },
+        "ogrod": {
+          "schowek": "SKARB: pod krzakiem przy płocie",
+          "obrazek": "🎁",
+          "maluch": "Brawo! Skarb jest schowany pod krzakiem. Biegnij!",
+          "starszak": "Skarb ukrył się pod zielonym krzakiem przy płocie!"
+        }
+      }
+    }
+  ]
+}

@@ -4,8 +4,14 @@
   "opis": "6 stacji, dla dzieci 3–12 lat. Wersja do domu i do ogrodu.",
   "motyw": {
     "ikona": "🐯",
-    "ikony": ["🐯", "🏍️"],
-    "ikonyDruk": ["ikony/tygrys.svg", "ikony/motor.svg"],
+    "ikony": [
+      "🐯",
+      "🏍️"
+    ],
+    "ikonyDruk": [
+      "ikony/tygrys.svg",
+      "ikony/motor.svg"
+    ],
     "kolor": "#e8590c",
     "powitanie": {
       "maluch": "Wrrrum! Tygrysy wsiadły na motory i schowały skarb! Pomożesz go znaleźć?",
@@ -15,7 +21,15 @@
       "ikona": "🎁",
       "tytul": "Skarb jest wasz!",
       "tekst": "Brawo, dzielne tygrysy! Rozwiązaliście wszystkie zagadki. Wszystkiego najlepszego!"
-    }
+    },
+    "styl": "tygrysy",
+    "maskotka": {
+      "gatunek": "tygrys",
+      "imie": "Tygrysek"
+    },
+    "pojazd": "motor",
+    "dzwiekRuchu": "wrrum",
+    "okrzyk": "Hurra! Jedziemy dalej! Wrrrum!"
   },
   "start": {
     "dom": {
@@ -38,15 +52,30 @@
       "maluch": {
         "zagadka": "Kto ma pomarańczowe futerko w czarne paski i robi: wrrrr? Pokaż go!",
         "opcje": [
-          { "obrazek": "🐮", "nazwa": "krowa" },
-          { "obrazek": "🐯", "nazwa": "tygrys" },
-          { "obrazek": "🐟", "nazwa": "rybka" }
+          {
+            "obrazek": "🐮",
+            "nazwa": "krowa"
+          },
+          {
+            "obrazek": "🐯",
+            "nazwa": "tygrys"
+          },
+          {
+            "obrazek": "🐟",
+            "nazwa": "rybka"
+          }
         ],
         "poprawna": 1
       },
       "starszak": {
         "zagadka": "Tygrys to największy kot na świecie. Jak nazywa się jego mały kuzyn, który mieszka z ludźmi w domu i mówi: miau?",
-        "odpowiedzi": ["kot", "kotek", "kocur", "kot domowy", "kotka"]
+        "odpowiedzi": [
+          "kot",
+          "kotek",
+          "kocur",
+          "kot domowy",
+          "kotka"
+        ]
       },
       "wskazowka": {
         "dom": {
@@ -69,16 +98,32 @@
       "maluch": {
         "zagadka": "Brum, brum! Na czym jeździ motocyklista? Ma dwa koła i głośny silnik.",
         "opcje": [
-          { "obrazek": "🏍️", "nazwa": "motor" },
-          { "obrazek": "🛁", "nazwa": "wanna" },
-          { "obrazek": "🍌", "nazwa": "banan" },
-          { "obrazek": "🧸", "nazwa": "miś" }
+          {
+            "obrazek": "🏍️",
+            "nazwa": "motor"
+          },
+          {
+            "obrazek": "🛁",
+            "nazwa": "wanna"
+          },
+          {
+            "obrazek": "🍌",
+            "nazwa": "banan"
+          },
+          {
+            "obrazek": "🧸",
+            "nazwa": "miś"
+          }
         ],
         "poprawna": 0
       },
       "starszak": {
         "zagadka": "Co musi założyć na głowę każdy motocyklista, zanim ruszy w drogę? Chroni głowę, gdy się przewróci.",
-        "odpowiedzi": ["kask", "kask motocyklowy", "kasku"]
+        "odpowiedzi": [
+          "kask",
+          "kask motocyklowy",
+          "kasku"
+        ]
       },
       "wskazowka": {
         "dom": {
@@ -101,15 +146,27 @@
       "maluch": {
         "zagadka": "Ile kółek ma motor? Pokaż dwa kółka!",
         "opcje": [
-          { "obrazek": "🛞", "nazwa": "jedno kółko" },
-          { "obrazek": "🛞🛞🛞", "nazwa": "trzy kółka" },
-          { "obrazek": "🛞🛞", "nazwa": "dwa kółka" }
+          {
+            "obrazek": "🛞",
+            "nazwa": "jedno kółko"
+          },
+          {
+            "obrazek": "🛞🛞🛞",
+            "nazwa": "trzy kółka"
+          },
+          {
+            "obrazek": "🛞🛞",
+            "nazwa": "dwa kółka"
+          }
         ],
         "poprawna": 2
       },
       "starszak": {
         "zagadka": "Tygrys ma 4 łapy, a motor ma 2 koła. Dwa tygrysy jadą na jednym motorze. Ile razem jest łap i kół?",
-        "odpowiedzi": ["10", "dziesięć"]
+        "odpowiedzi": [
+          "10",
+          "dziesięć"
+        ]
       },
       "wskazowka": {
         "dom": {
@@ -132,15 +189,30 @@
       "maluch": {
         "zagadka": "Tygrys jest głodny! Co zje tygrys na obiad? Pokaż!",
         "opcje": [
-          { "obrazek": "🍭", "nazwa": "lizak" },
-          { "obrazek": "🥩", "nazwa": "mięsko" },
-          { "obrazek": "🧦", "nazwa": "skarpetka" }
+          {
+            "obrazek": "🍭",
+            "nazwa": "lizak"
+          },
+          {
+            "obrazek": "🥩",
+            "nazwa": "mięsko"
+          },
+          {
+            "obrazek": "🧦",
+            "nazwa": "skarpetka"
+          }
         ],
         "poprawna": 1
       },
       "starszak": {
         "zagadka": "Motor nie pije wody ani soku. Co trzeba wlać do jego baku, żeby mógł jechać?",
-        "odpowiedzi": ["benzyna", "benzynę", "paliwo", "ropa", "olej napędowy"]
+        "odpowiedzi": [
+          "benzyna",
+          "benzynę",
+          "paliwo",
+          "ropa",
+          "olej napędowy"
+        ]
       },
       "wskazowka": {
         "dom": {
@@ -163,15 +235,29 @@
       "maluch": {
         "zagadka": "Tygrys jest pomarańczowy. Co jeszcze jest pomarańczowe? Pokaż!",
         "opcje": [
-          { "obrazek": "🥦", "nazwa": "brokuł" },
-          { "obrazek": "🍇", "nazwa": "winogrona" },
-          { "obrazek": "🍊", "nazwa": "pomarańcza" }
+          {
+            "obrazek": "🥦",
+            "nazwa": "brokuł"
+          },
+          {
+            "obrazek": "🍇",
+            "nazwa": "winogrona"
+          },
+          {
+            "obrazek": "🍊",
+            "nazwa": "pomarańcza"
+          }
         ],
         "poprawna": 2
       },
       "starszak": {
         "zagadka": "Motor dojeżdża do skrzyżowania. Na jakim kolorze światła musi się zatrzymać?",
-        "odpowiedzi": ["czerwony", "czerwone", "czerwonym", "na czerwonym"]
+        "odpowiedzi": [
+          "czerwony",
+          "czerwone",
+          "czerwonym",
+          "na czerwonym"
+        ]
       },
       "wskazowka": {
         "dom": {
@@ -194,15 +280,30 @@
       "maluch": {
         "zagadka": "Gdzie mieszka tygrys? W dżungli, wśród drzew. Pokaż dżunglę!",
         "opcje": [
-          { "obrazek": "🚀", "nazwa": "rakieta" },
-          { "obrazek": "🌴", "nazwa": "dżungla" },
-          { "obrazek": "🌊", "nazwa": "morze" }
+          {
+            "obrazek": "🚀",
+            "nazwa": "rakieta"
+          },
+          {
+            "obrazek": "🌴",
+            "nazwa": "dżungla"
+          },
+          {
+            "obrazek": "🌊",
+            "nazwa": "morze"
+          }
         ],
         "poprawna": 1
       },
       "starszak": {
         "zagadka": "Jestem długa, szara i twarda. Jeżdżą po mnie motory, auta i rowery, a obok mnie idzie chodnik. Czym jestem?",
-        "odpowiedzi": ["droga", "ulica", "szosa", "jezdnia", "autostrada"]
+        "odpowiedzi": [
+          "droga",
+          "ulica",
+          "szosa",
+          "jezdnia",
+          "autostrada"
+        ]
       },
       "wskazowka": {
         "dom": {

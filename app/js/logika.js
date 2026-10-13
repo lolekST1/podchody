@@ -7,6 +7,14 @@ export const TRYBY = {
 };
 export const WARIANTY = { dom: 'W domu', ogrod: 'W ogrodzie' };
 
+// Motywy wbudowane w aplikację — nowa gra wybiera z tych list (nowy motyw = nowy kod i CSS).
+export const MOTYWY = {
+  styl: ['tygrysy', 'pilka', 'konie', 'pandy', 'jednorozce'],
+  gatunek: ['tygrys', 'lis', 'kon', 'panda', 'jednorozec'],
+  pojazd: ['motor', 'pilka', 'kucyk', 'panda', 'jednorozec'],
+  dzwiekRuchu: ['wrrum', 'gwizdek', 'patataj', 'boing', 'magia'],
+};
+
 // ł nie rozkłada się w NFD na „l + znak diakrytyczny”, więc trzeba go zamienić ręcznie.
 export function normalizuj(tekst) {
   return String(tekst ?? '')
@@ -77,6 +85,12 @@ export function sprawdzGre(gra) {
   wymagane(gra.tytul, 'Brak pola "tytul"');
   wymagane(gra.motyw?.ikona, 'Brak "motyw.ikona"');
   wymagane(gra.motyw?.skarb?.tytul, 'Brak "motyw.skarb.tytul"');
+  const znane = (wartosc, lista, pole) => wymagane(wartosc === undefined || lista.includes(wartosc),
+    `"${pole}" = "${wartosc}" — dozwolone: ${lista.join(', ')}`);
+  znane(gra.motyw?.styl, MOTYWY.styl, 'motyw.styl');
+  znane(gra.motyw?.maskotka?.gatunek, MOTYWY.gatunek, 'motyw.maskotka.gatunek');
+  znane(gra.motyw?.pojazd, MOTYWY.pojazd, 'motyw.pojazd');
+  znane(gra.motyw?.dzwiekRuchu, MOTYWY.dzwiekRuchu, 'motyw.dzwiekRuchu');
   for (const w of Object.keys(WARIANTY)) {
     sprawdzWskazowke(gra.start?.[w], `start.${w}`, bledy);
   }
