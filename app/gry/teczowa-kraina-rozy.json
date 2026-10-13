@@ -25,6 +25,12 @@
       "ikona": "🎁",
       "tytul": "Magiczny skarb jest wasz!",
       "tekst": "Brawo, czarodzieje! Wszystkiego najlepszego, Różo — niech każdy dzień będzie kolorowy jak tęcza!"
+    },
+    "lektor": {
+      "glos": "nova",
+      "plec": "dziewczynka",
+      "tempo": 0.95,
+      "styl": "Jednorożka Gwiazdka: rozmarzony, magiczny, roziskrzony dziewczęcy głos, pełen zachwytu, mówi do dziesięciolatki."
     }
   },
   "start": {

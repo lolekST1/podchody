@@ -29,7 +29,13 @@
     },
     "pojazd": "motor",
     "dzwiekRuchu": "wrrum",
-    "okrzyk": "Hurra! Jedziemy dalej! Wrrrum!"
+    "okrzyk": "Hurra! Jedziemy dalej! Wrrrum!",
+    "lektor": {
+      "glos": "ash",
+      "plec": "chlopiec",
+      "tempo": 0.9,
+      "styl": "Tygrysek: ciepły, wesoły chłopięcy głos małego tygryska. Mówi powoli, prosto i bardzo wyraźnie, jak do trzylatka. Radosny, ale spokojny."
+    }
   },
   "start": {
     "dom": {

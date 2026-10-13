@@ -63,7 +63,7 @@ test('maluch: cała gra obrazkami, zagadki czytane na głos', async ({ page }) =
     }
   }
   await expect(page.locator('[data-skarb]')).toBeVisible();
-  expect((await mowa(page)).at(-1)).toContain(gra.motyw.skarb.tytul);
+  expect((await mowa(page)).join(' ')).toContain(gra.motyw.skarb.tytul);
   await zrzut(page, 'maluch-03-skarb');
 });
 
@@ -98,7 +98,7 @@ test('skanowanie poza kolejnością nie zdradza zagadki', async ({ page }) => {
   await ustawGre(page, { tryb: 'mieszany' });
   await skanuj(page, 3);
   await expect(page.locator('[data-komunikat="za-wczesnie"]')).toContainText('To jeszcze nie ta kryjówka');
-  await expect(page.locator('[data-komunikat="za-wczesnie"]')).toContainText('kartę nr 1');
+  await expect(page.locator('[data-komunikat="za-wczesnie"]')).toContainText('kartę numer 1');
   const tresc = await page.locator('main').innerText();
   expect(tresc).not.toContain(gra.stacje[2].starszak.zagadka);
   expect(tresc).not.toContain(gra.stacje[2].maluch.zagadka);
@@ -116,7 +116,7 @@ test('skanowanie poza kolejnością nie zdradza zagadki', async ({ page }) => {
   await rozwiazStarszaka(page, 'kot');
   await expect(page.locator('[data-szukana="2"]')).toBeVisible();
   await skanuj(page, 1);
-  await expect(page.locator('[data-komunikat="juz-byla"]')).toContainText('karty nr 2');
+  await expect(page.locator('[data-komunikat="juz-byla"]')).toContainText('karty numer 2');
 });
 
 test('postęp przeżywa przeładowanie i zamknięcie karty przeglądarki', async ({ page, context }) => {

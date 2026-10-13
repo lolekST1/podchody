@@ -4,6 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { wszystkieKwestie } from '../../app/js/kwestie.js';
+import { existsSync } from 'node:fs';
 import {
   czyPoprawna, normalizuj, sprawdzGre, nowyStan, ocenSkan, zaliczCzesc,
   pominStacje, cofnijStacje, biezacaWskazowka, adresKarty, czytajAdres,
@@ -143,10 +145,31 @@ test('service worker zapisuje offline każdy plik aplikacji', () => {
     if (statSync(s).isDirectory()) przejdz(s); else pliki.push(relative('app', s));
   });
   przejdz('app');
-  const pomijane = (p) => p === 'sw.js' || p.startsWith('gry/') && p !== 'gry/index.json';
+  // Gry i nagrania lektora trafiają do pamięci przy pierwszym użyciu (sw.js i pobierzNagrania).
+  const pomijane = (p) => p === 'sw.js' || p.startsWith('audio/') || (p.startsWith('gry/') && p !== 'gry/index.json');
   for (const p of pliki.filter((x) => !pomijane(x))) assert.ok(sw.includes(`'${p}'`), `brak w sw.js: ${p}`);
   const lista = JSON.parse(readFileSync('app/gry/index.json', 'utf8')).gry;
   for (const p of pliki.filter((x) => x.startsWith('gry/') && x !== 'gry/index.json')) {
     assert.ok(lista.includes(p.slice(4, -5)), `gra ${p} nie jest w gry/index.json`);
+  }
+});
+
+test('każda kwestia mówiona w każdej grze ma nagranie lektora, a pliki istnieją', () => {
+  for (const g of wszystkieGry) {
+    assert.ok(g.motyw.lektor?.glos, `${g.id}: brak motyw.lektor`);
+    const manifest = JSON.parse(readFileSync(`app/audio/${g.id}/manifest.json`, 'utf8'));
+    for (const k of wszystkieKwestie(g)) {
+      assert.ok(manifest[k], `${g.id}: brak nagrania „${k}” — uruchom scripts/generuj-mowe.mjs`);
+      assert.ok(existsSync(`app/${manifest[k]}`), `${g.id}: brak pliku ${manifest[k]}`);
+    }
+  }
+});
+
+test('głos lektora zgadza się z płcią solenizanta', () => {
+  const MESKIE = ['ash', 'echo', 'onyx', 'ballad', 'cedar'];
+  const ZENSKIE = ['nova', 'coral', 'marin', 'shimmer', 'sage'];
+  for (const g of wszystkieGry) {
+    const { glos, plec } = g.motyw.lektor;
+    assert.ok((plec === 'chlopiec' ? MESKIE : ZENSKIE).includes(glos), `${g.id}: ${plec} ma głos ${glos}`);
   }
 });

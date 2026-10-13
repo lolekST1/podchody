@@ -25,6 +25,12 @@
       "ikona": "🏆",
       "tytul": "Gooool! Puchar jest wasz!",
       "tekst": "Mistrzowie! Wszystkiego najlepszego, Ignacy — 11 lat, tyle co zawodników w drużynie!"
+    },
+    "lektor": {
+      "glos": "echo",
+      "plec": "chlopiec",
+      "tempo": 1.0,
+      "styl": "Lisek Strzelec: energiczny, młody chłopięcy głos jak sympatyczny komentator meczu. Entuzjastyczny, z humorem, mówi do jedenastolatka."
     }
   },
   "start": {

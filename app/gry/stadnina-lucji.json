@@ -25,6 +25,12 @@
       "ikona": "🎁",
       "tytul": "Skarb odnaleziony!",
       "tekst": "Brawo, jeźdźcy! Wszystkiego najlepszego, Łucjo — niech każdy rok mija galopem!"
+    },
+    "lektor": {
+      "glos": "marin",
+      "plec": "dziewczynka",
+      "tempo": 0.97,
+      "styl": "Kucyk Iskierka: ciepły, przyjazny dziewczęcy głos, pogodny i pewny siebie, mówi do dwunastolatki jak starsza koleżanka ze stajni."
     }
   },
   "start": {

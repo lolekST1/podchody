@@ -13,6 +13,9 @@ export const MOTYWY = {
   gatunek: ['tygrys', 'lis', 'kon', 'panda', 'jednorozec'],
   pojazd: ['motor', 'pilka', 'kucyk', 'panda', 'jednorozec'],
   dzwiekRuchu: ['wrrum', 'gwizdek', 'patataj', 'boing', 'magia'],
+  // Głosy OpenAI TTS (scripts/generuj-mowe.mjs). Męskie: ash, echo, onyx, ballad, cedar;
+  // żeńskie: nova, coral, marin, shimmer, sage.
+  glos: ['ash', 'echo', 'onyx', 'ballad', 'cedar', 'nova', 'coral', 'marin', 'shimmer', 'sage', 'alloy', 'fable', 'verse'],
 };
 
 // ł nie rozkłada się w NFD na „l + znak diakrytyczny”, więc trzeba go zamienić ręcznie.
@@ -91,6 +94,7 @@ export function sprawdzGre(gra) {
   znane(gra.motyw?.maskotka?.gatunek, MOTYWY.gatunek, 'motyw.maskotka.gatunek');
   znane(gra.motyw?.pojazd, MOTYWY.pojazd, 'motyw.pojazd');
   znane(gra.motyw?.dzwiekRuchu, MOTYWY.dzwiekRuchu, 'motyw.dzwiekRuchu');
+  znane(gra.motyw?.lektor?.glos, MOTYWY.glos, 'motyw.lektor.glos');
   for (const w of Object.keys(WARIANTY)) {
     sprawdzWskazowke(gra.start?.[w], `start.${w}`, bledy);
   }

@@ -4,9 +4,11 @@ import { expect } from '@playwright/test';
 export const gra = JSON.parse(readFileSync('app/gry/tygrysy-i-motory.json', 'utf8'));
 export const adres = (nr, token = gra.stacje[nr - 1].token) => `./?g=${gra.id}&s=${nr}&t=${token}`;
 
-// Zastępuje syntezę mowy nagrywarką: test widzi, co telefon przeczytałby dziecku.
+// Zastępuje syntezę mowy nagrywarką: test widzi, co telefon przeczytałby dziecku
+// (window.__mowaLog wypełnia mowa.js — tak samo dla nagrań lektora i syntezy).
 export async function nagrywajMowe(page) {
   await page.addInitScript(() => {
+    window.__mowaLog = [];
     window.__mowa = [];
     const synteza = {
       speak: (w) => window.__mowa.push(w.text),
@@ -17,7 +19,7 @@ export async function nagrywajMowe(page) {
     Object.defineProperty(window, 'speechSynthesis', { value: synteza, configurable: true });
   });
 }
-export const mowa = (page) => page.evaluate(() => window.__mowa);
+export const mowa = (page) => page.evaluate(() => window.__mowaLog);
 
 export async function ustawGre(page, { tryb, wariant = 'dom', pin = '2580' }) {
   await page.goto('./');

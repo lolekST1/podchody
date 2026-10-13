@@ -25,6 +25,12 @@
       "ikona": "🎁",
       "tytul": "Skarb jest wasz!",
       "tekst": "Brawo! Panda Pyzia mocno was ściska. Wszystkiego najlepszego, Zuziu — 7 razy hurra!"
+    },
+    "lektor": {
+      "glos": "coral",
+      "plec": "dziewczynka",
+      "tempo": 0.9,
+      "styl": "Panda Pyzia: słodki, łagodny, przytulny dziewczęcy głos. Mówi powoli i czule do siedmiolatki."
     }
   },
   "start": {

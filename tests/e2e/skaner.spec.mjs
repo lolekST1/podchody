@@ -20,6 +20,6 @@ test('przycisk „Skanuj kartę” czyta kod z aparatu i otwiera zagadkę', asyn
   await expect(page.locator('[data-opcja]')).toHaveCount(gra.stacje[0].maluch.opcje.length, { timeout: 15_000 });
   await expect(page.locator('#skaner')).toBeHidden();
   // Po skanie w aplikacji mowa rusza sama — dotknięcie przycisku już było.
-  expect(await page.evaluate(() => window.__mowa)).toContain(gra.stacje[0].maluch.zagadka);
+  expect(await page.evaluate(() => window.__mowaLog)).toContain(gra.stacje[0].maluch.zagadka);
   await zrzut(page, 'skaner-01-po-skanie');
 });
