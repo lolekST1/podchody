@@ -12,13 +12,13 @@ Na końcu jest ekran skarbu.
 Wybór gry jest na ekranie „Przygotuj grę”: ekran od razu przebiera się w jej kolory i maskotkę.
 Karty do druku wybiera się tak samo, polem „Gra” na stronie wydruku.
 
-| Gra | Dla kogo | Maskotka i droga postępu |
-|---|---|---|
-| 🐯 Tygrysy i motory Remka | Remek, 3 lata (najlepiej w trybie „Maluch”) | Tygrysek w goglach, motor na asfalcie |
-| ⚽ Piłkarski turniej Ignacego | Ignacy, 11 lat | Lisek Strzelec w koszulce z „10”, piłka toczy się po boisku |
-| 🐴 Stadnina Łucji | Łucja, 12 lat | Kucyk Iskierka, galop po leśnej ścieżce |
-| 🐼 Bambusowy las Zuzi | Zuzia, 7 lat | Panda Pyzia z bambusem, panda turla się po bambusowej ścieżce |
-| 🦄 Tęczowa kraina Róży | Róża, 10 lat | Jednorożka Gwiazdka, lot po tęczy |
+| Gra | Dla kogo | Maskotka i droga postępu | Głos maskotki |
+|---|---|---|---|
+| 🐯 Tygrysy i motory Remka | Remek, 3 lata (najlepiej w trybie „Maluch”) | Tygrysek w goglach, motor na asfalcie | Puck |
+| ⚽ Piłkarski turniej Ignacego | Ignacy, 11 lat | Lisek Strzelec w koszulce z „10”, piłka toczy się po boisku | Fenrir |
+| 🐴 Stadnina Łucji | Łucja, 12 lat | Kucyk Iskierka, galop po leśnej ścieżce | Leda |
+| 🐼 Bambusowy las Zuzi | Zuzia, 7 lat | Panda Pyzia z bambusem, panda turla się po bambusowej ścieżce | Kore |
+| 🦄 Tęczowa kraina Róży | Róża, 10 lat | Jednorożka Gwiazdka, lot po tęczy | Zephyr |
 
 Zagadki starszaka są dopasowane do wieku solenizanta: dla Zuzi krótkie i proste, dla Róży szyfry
 i słowa czytane od tyłu, dla Ignacego i Łucji wiedza o piłce i koniach. Wersja malucha zostaje
@@ -28,7 +28,7 @@ podaje kryjówki i odpowiedzi.
 ## Co zobaczą dzieci
 
 Maskotka gry (np. Tygrysek w goglach motocyklowych) prowadzi przez grę: macha na powitanie, rusza pyszczkiem,
-kiedy telefon czyta zagadkę, skacze z radości po dobrej odpowiedzi i przechyla głowę po złej.
+kiedy czyta zagadkę (każda maskotka ma własny głos, nagrany wcześniej), skacze z radości po dobrej odpowiedzi i przechyla głowę po złej.
 U góry ekranu znacznik motywu (motor, piłka, kucyk, panda, jednorożec) przesuwa się po drodze
 do kolejnej flagi po każdej zaliczonej karcie.
 Na końcu dzieci otwierają dotykiem skrzynię skarbu i lecą z niej monety, gwiazdy i konfetti.
@@ -51,7 +51,8 @@ Przycisk 🔊 w rogu je wycisza. Przy włączonym w systemie „ograniczeniu ruc
    Karty do ogrodu włóż w foliowe koszulki.
 2. **Schowaj karty** według ściągawki. Kryjówki możesz zmienić, ale wtedy zmień też
    wskazówki w pliku gry (patrz niżej). Inaczej dzieci dostaną mylącą podpowiedź.
-3. **Na telefonie, którym będą grać dzieci**, otwórz grę **przy dostępie do internetu**.
+3. **Na telefonie, którym będą grać dzieci**, otwórz grę **przy dostępie do internetu**
+   i wybierz ją na ekranie „Przygotuj grę”. Odczekaj chwilę, aż telefon pobierze głos maskotki.
    Od tej chwili działa też bez sieci. Wybierz tryb i miejsce, ustaw 4-cyfrowy PIN rodzica,
    naciśnij „Zaczynamy!”.
 4. Grajcie na **jednym telefonie**, bo postęp zapisuje się tylko na tym urządzeniu.
@@ -86,14 +87,16 @@ Każda gra to jeden plik JSON w `app/gry/`. Najprościej poprosić Claude. Skopi
 > Liczba kart: **[np. 6]**. Kryjówki w domu: **[np. kanapa, łazienka, …]**. Kryjówki w ogrodzie:
 > **[…]**. Skarb: **[gdzie]**. Zagadki dla malucha: bardzo proste, 3–4 obrazki emoji, bez postaci
 > z bajek i znaków towarowych. Zagadki dla starszaka: dla podanego wieku, z kilkoma akceptowanymi
-> odpowiedziami, i na każdej karcie z **inną odpowiedzią niż u malucha** (w trybie mieszanym obie są na jednym ekranie). Nowe losowe tokeny. Dopisz grę do `app/gry/index.json`, uruchom `npm test`
+> odpowiedziami, i na każdej karcie z **inną odpowiedzią niż u malucha** (w trybie mieszanym obie są na jednym ekranie). Nowe losowe tokeny. Maskotce daj głos, którego nie ma jeszcze żadna gra.
+> Dopisz grę do `app/gry/index.json`, nagraj głos (`npm run nagrania`), uruchom `npm test`
 > i wypchnij zmiany na `main`.
 
 Po wdrożeniu (około 3 minut) nowa gra pojawi się na ekranie „Przygotuj grę” i na stronie z kartami.
 
 Motyw wybiera się w `motyw`: `styl` (tygrysy, pilka, konie, pandy, jednorozce), `maskotka.gatunek`
 (tygrys, lis, kon, panda, jednorozec), `pojazd` (motor, pilka, kucyk, panda, jednorozec), `dzwiekRuchu`
-(wrrum, gwizdek, patataj, boing, magia) i `okrzyk`. Zupełnie nowy motyw, np. dinozaury, wymaga
+(wrrum, gwizdek, patataj, boing, magia), `okrzyk` i `maskotka.glos` (głos Gemini TTS, inny niż
+w pozostałych grach, np. Aoede, Charon, Laomedeia; głosy już zajęte są w tabeli „Gry w zestawie”). Zupełnie nowy motyw, np. dinozaury, wymaga
 nowej maskotki i kolorów w kodzie: poproś o to Claude tym samym poleceniem.
 
 Najważniejsze pola pliku gry:
@@ -118,6 +121,14 @@ npm test             # testy logiki + testy w przeglądarce (widok telefonu Pixe
 - Po zmianie plików aplikacji podbij `WERSJA` w `app/sw.js`, żeby telefony pobrały nową wersję.
 - `raport/` po `npm test` zawiera zrzuty ekranów z przejść gry i PDF-y z kartami.
 - `node scripts/film.mjs` (przy działającym `PORT=8123 npm start`) nagrywa film z rozgrywki: `raport/film-rozgrywki.webm`.
+- `npm run nagrania` nagrywa przez Gemini TTS (`gemini-2.5-flash-preview-tts`) wszystko, co maskotka
+  czyta na głos (lista zdań: `tekstyMowy()` w `app/js/logika.js`), do `app/nagrania/<id gry>/` jako mp3.
+  Dogrywa tylko brakujące zdania i usuwa nieużywane, więc po każdej zmianie tekstów malucha
+  trzeba go uruchomić ponownie (test to wyłapie). Klucz API bierze ze zmiennej `GEMINI_API_KEY`
+  (albo dokleja go proxy) i nie trafia do repozytorium. Potrzebny jest `ffmpeg`. Pełna gra to około 60 zdań
+  i kilkadziesiąt groszy. Limity Gemini dla tego modelu: 10 nagrań na minutę i 100 dziennie
+  (reset o północy czasu pacyficznego). Po limicie dziennym skrypt kończy pracę, a następnego dnia
+  dogrywa resztę. Dopóki gra nie ma kompletu nagrań, mówi głosem systemowym.
 - Krój pisma: Baloo 2 (SIL Open Font License), dołączony w `app/fonty/`, żeby działał offline.
 
 ## Znane ograniczenia
@@ -126,7 +137,8 @@ npm test             # testy logiki + testy w przeglądarce (widok telefonu Pixe
 - **iPhone:** jeśli grę dodano do ekranu głównego, skan zwykłym aparatem otwiera Safari,
   które ma osobną pamięć postępu. Na iPhonie skanuj przyciskiem w grze albo graj w Safari
   bez dodawania do ekranu głównego.
-- Mowa korzysta z głosu wbudowanego w telefon. Na większości telefonów jest polski głos.
+- Maskotki mówią z nagrań, które telefon pobiera po wyborze gry. Zdania bez nagrania (np. w nowej grze
+  przed `npm run nagrania`) czyta głos wbudowany w telefon. Na większości telefonów jest polski głos.
   Bez niego zagadka i tak jest na ekranie, a dorosły może ją przeczytać.
 - Po zeskanowaniu karty **zwykłym aparatem** przeglądarka może nie pozwolić na mowę bez
   dotknięcia ekranu. Wtedy dziecko naciska „🔊 Posłuchaj zagadki”. Skaner w grze nie ma tego problemu.

@@ -91,6 +91,8 @@ export function sprawdzGre(gra) {
   znane(gra.motyw?.maskotka?.gatunek, MOTYWY.gatunek, 'motyw.maskotka.gatunek');
   znane(gra.motyw?.pojazd, MOTYWY.pojazd, 'motyw.pojazd');
   znane(gra.motyw?.dzwiekRuchu, MOTYWY.dzwiekRuchu, 'motyw.dzwiekRuchu');
+  const glos = gra.motyw?.maskotka?.glos;
+  wymagane(glos === undefined || /^[A-Z][a-z]+$/.test(glos), `"motyw.maskotka.glos" = "${glos}" — to nazwa głosu Gemini, np. Puck`);
   for (const w of Object.keys(WARIANTY)) {
     sprawdzWskazowke(gra.start?.[w], `start.${w}`, bledy);
   }
@@ -208,4 +210,56 @@ export function czytajAdres(adres) {
   } catch {
     return null;
   }
+}
+
+// ---- Mowa i nagrania głosu maskotki ----
+// Wszystko, co telefon czyta na głos, powstaje tutaj — z tej samej listy korzysta
+// skrypt scripts/nagrania.mjs, więc każde zdanie ma swoje nagranie.
+
+export const mowaDobrze = (nazwa) => `${nazwa}! Brawo!`;
+export const mowaZle = (nazwa) => `To jest ${nazwa}. Spróbuj jeszcze raz!`;
+
+export function komunikatSkanu(typ, szukana) {
+  return {
+    'za-wczesnie': { tytul: 'To jeszcze nie ta kryjówka!',
+      tekst: `Ta karta poczeka na swoją kolej. Najpierw znajdźcie kartę nr ${szukana}. Odłóżcie tę kartę tam, gdzie leżała.` },
+    'juz-byla': { tytul: 'Tę kartę już znaleźliście!', tekst: `Teraz szukacie karty nr ${szukana}.` },
+    obca: { tytul: 'Ta karta nie pasuje do gry', tekst: 'Ten kod jest z innej gry albo z innego wydruku. Poproście rodzica o pomoc.' },
+    'nie-rozpoczeta': { tytul: 'Gra jeszcze się nie zaczęła', tekst: 'Poproście rodzica, żeby uruchomił grę na tym telefonie.' },
+  }[typ];
+}
+const TYPY_KOMUNIKATOW = ['za-wczesnie', 'juz-byla', 'obca', 'nie-rozpoczeta'];
+
+// Zdania czytane w grze; dłuższe wypowiedzi aplikacja skleja z kilku takich kawałków.
+export function tekstyMowy(gra) {
+  const teksty = new Set();
+  const dodaj = (t) => { if (t) teksty.add(t); };
+  dodaj(gra.motyw.powitanie?.maluch);
+  dodaj('Brawo!');
+  dodaj(gra.motyw.skarb.tytul);
+  for (const w of Object.keys(WARIANTY)) dodaj(gra.start[w].maluch);
+  for (const s of gra.stacje) {
+    dodaj(s.maluch.zagadka);
+    s.maluch.opcje.forEach((o, i) => dodaj(i === s.maluch.poprawna ? mowaDobrze(o.nazwa) : mowaZle(o.nazwa)));
+    for (const w of Object.keys(WARIANTY)) dodaj(s.wskazowka[w].maluch);
+  }
+  for (const typ of TYPY_KOMUNIKATOW) {
+    for (let nr = 1; nr <= gra.stacje.length; nr++) {
+      const k = komunikatSkanu(typ, nr);
+      dodaj(k.tytul);
+      dodaj(k.tekst);
+    }
+  }
+  return [...teksty];
+}
+
+// Nazwa pliku nagrania: skrót (FNV-1a) głosu i tekstu. Zmiana zdania albo głosu
+// daje nową nazwę, więc telefon nigdy nie zagra starego nagrania z pamięci.
+export function plikNagrania(glos, tekst) {
+  let h = 0x811c9dc5;
+  for (const znak of new TextEncoder().encode(`${glos}|${tekst}`)) {
+    h ^= znak;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, '0');
 }

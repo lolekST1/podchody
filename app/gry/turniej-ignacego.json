@@ -12,7 +12,8 @@
     "styl": "pilka",
     "maskotka": {
       "gatunek": "lis",
-      "imie": "Lisek Strzelec"
+      "imie": "Lisek Strzelec",
+      "glos": "Fenrir"
     },
     "pojazd": "pilka",
     "dzwiekRuchu": "gwizdek",

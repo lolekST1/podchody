@@ -12,7 +12,8 @@
     "styl": "jednorozce",
     "maskotka": {
       "gatunek": "jednorozec",
-      "imie": "Jednorożka Gwiazdka"
+      "imie": "Jednorożka Gwiazdka",
+      "glos": "Zephyr"
     },
     "pojazd": "jednorozec",
     "dzwiekRuchu": "magia",

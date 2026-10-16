@@ -67,6 +67,16 @@ test('maluch: cała gra obrazkami, zagadki czytane na głos', async ({ page }) =
   await zrzut(page, 'maluch-03-skarb');
 });
 
+test('maluch: maskotka mówi własnym głosem z nagrań, bez syntezy systemowej', async ({ page }) => {
+  await ustawGre(page, { tryb: 'maluch' });
+  await skanuj(page, 1);
+  await page.getByRole('button', { name: /Posłuchaj zagadki/ }).click();
+  await expect.poll(() => page.evaluate(() => window.__nagrania.length)).toBeGreaterThan(1);
+  const nagrania = await page.evaluate(() => window.__nagrania);
+  for (const src of nagrania) expect(src).toMatch(/^blob:|\/nagrania\/tygrysy-i-motory\/[0-9a-f]{8}\.mp3$/);
+  expect(await page.evaluate(() => window.__synteza)).toEqual([]);
+});
+
 test('mieszany w ogrodzie: na każdej stacji trzeba rozwiązać obie zagadki', async ({ page }) => {
   await ustawGre(page, { tryb: 'mieszany', wariant: 'ogrod' });
   await expect(page.locator('[data-wskazowka]')).toContainText(gra.start.ogrod.starszak);

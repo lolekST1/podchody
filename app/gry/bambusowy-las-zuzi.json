@@ -12,7 +12,8 @@
     "styl": "pandy",
     "maskotka": {
       "gatunek": "panda",
-      "imie": "Panda Pyzia"
+      "imie": "Panda Pyzia",
+      "glos": "Kore"
     },
     "pojazd": "panda",
     "dzwiekRuchu": "boing",

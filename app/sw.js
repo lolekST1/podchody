@@ -1,6 +1,6 @@
 // Service worker: po pierwszym otwarciu cała gra działa bez internetu.
 // Przy każdej zmianie plików aplikacji podbij WERSJA — stary cache zostanie usunięty.
-const WERSJA = 'podchody-v8';
+const WERSJA = 'podchody-v9';
 const PLIKI = [
   './',
   'index.html',
@@ -54,6 +54,8 @@ self.addEventListener('activate', (e) => {
 
 // Najpierw cache (działa w lesie bez zasięgu), w tle odświeżenie z sieci.
 // Adresy kart mają parametry (?g=…&s=…&t=…), więc strony szukamy bez nich.
+// Nagrania głosu (nagrania/<gra>/<skrót>.mp3) pobiera aplikacja po wyborze gry. Nazwa pliku
+// zmienia się razem z treścią, więc zapisanego nagrania nie trzeba odświeżać.
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
@@ -61,6 +63,7 @@ self.addEventListener('fetch', (e) => {
     const cache = await caches.open(WERSJA);
     const strona = req.mode === 'navigate';
     const zCache = await cache.match(req, { ignoreSearch: strona });
+    if (zCache && /\/nagrania\/.+\.mp3$/.test(req.url)) return zCache;
     const zSieci = fetch(req).then((odp) => {
       if (odp.ok) cache.put(strona ? new URL(req.url).pathname : req, odp.clone());
       return odp;
